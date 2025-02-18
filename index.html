@@ -466,8 +466,8 @@
       const printerName = (document.getElementById("printerName")?.value || "<PrinterName>").trim();
       const detectionText = `Registry<br>
 Key Path: HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\<strong style="color:#bb86fc;">${printerName}</strong><br>
-Value: Name<br>
-Detection method: String<br>
+Value name: Name<br>
+Detection method: String comparison<br>
 Operator: Equals<br>
 Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
       document.getElementById("detectionPreview").innerHTML = detectionText;

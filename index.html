@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Intune Printer Deployment Toolkit</title>
+  <!-- Google Font for better typography -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+  <style>
+    /* Reset & Basic Styling */
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background: #121212;
+      color: #e0e0e0;
+    }
+    header {
+    background: #bb86fc;
+    color: white;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    position: relative;
+    left: 25%;  /* Start it at 25% from the left side to center it */
+    max-width: 50%;
+    border-radius: 2px;
+    }
+
+    h1 {
+      margin: 0;
+      font-weight: 500;
+    }
+    .container {
+      max-width: 50%;
+      margin: 2rem auto;
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+    }
+    
+    /* Tabs Styling */
+    .tab {
+      display: flex;
+      border-bottom: 2px solid #444;
+      margin-bottom: 1.5rem;
+    }
+    .tab button {
+      flex: 1;
+      background: #2e2e2e;
+      border: none;
+      outline: none;
+      padding: 1rem;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      color: #e0e0e0;
+      border-radius: 2px;
+    }
+    .tab button:hover {
+      background: #3e3e3e;
+    }
+    .tab button.active {
+      background: #bb86fc;
+      color: white;
+      font-weight: 500;
+    }
+    .tabcontent {
+      display: none;
+    }
+    
+    /* Section Styling */
+    .section {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #2e2e2e;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #bb86fc;
+    }
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: 400;
+    }
+    input[type="text"], select, input[type="file"] {
+      width: 97.5%;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      border: 1px solid #555;
+      border-radius: 4px;
+      font-size: 14px;
+      background: #333;
+      color: #e0e0e0;
+    }
+    .radio-group {
+      margin-top: 0.5rem;
+    }
+    .radio-group label {
+      margin-right: 1rem;
+      font-weight: 400;
+    }
+    button.nav {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background: #bb86fc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    button.nav:hover {
+      background: #9b6bfc;
+    }
+    
+    /* Previews Styling */
+    pre {
+      background: #333;
+      padding: 1rem;
+      border: 1px solid #555;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 14px;
+      margin-bottom: 1rem;
+      color: #e0e0e0;
+    }
+    
+    /* Driver Downloads Tab Styling */
+    #driverDownloadSection {
+      text-align: center;
+    }
+    #driverDownloadSection select {
+      width: 80%;
+      max-width: 400px;
+      margin-bottom: 1rem;
+      background: #333;
+      color: #e0e0e0;
+    }
+    #driverDownloadSection button {
+      padding: 0.8rem 1.5rem;
+      background: #bb86fc;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    #driverDownloadSection button:hover {
+      background: #9b6bfc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Intune Printer Deployment Toolkit</h1>
+  </header>
+  <div class="container">
+    <!-- Tab Navigation -->
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'Config')">Config</button>
+      <button class="tablinks" onclick="openTab(event, 'Detection')">Detection</button>
+      <button class="tablinks" onclick="openTab(event, 'DriverDownloads')">Driver Downloads</button>
+    </div>
+    
+    <!-- Config Tab -->
+    <div id="Config" class="tabcontent" style="display: block;">
+      <div id="installFormContainer">
+        <!-- Section 1: Printer Details -->
+        <div class="section" id="section1">
+          <h2>Printer Details</h2>
+          <label for="ipAddress">Printer Port IP Address:</label>
+          <input type="text" id="ipAddress" placeholder="10.195.100.200" oninput="updateAllPreviews()">
+          
+          <label for="portName">Printer Port Name:</label>
+          <input type="text" id="portName" placeholder="Intune Deployed - Company - 10.195.100.200" oninput="updateAllPreviews()">
+          
+          <label for="printerName">Printer Name:</label>
+          <input type="text" id="printerName" placeholder="Upstairs Printer" oninput="updateAllPreviews()">
+          
+          <button class="nav" type="button" onclick="nextSection('section1', 'section2')">Next</button>
+        </div>
+        
+        <!-- Section 2: Driver Details -->
+        <div class="section" id="section2" style="display: none;">
+          <h2>Driver Details</h2>
+          <fieldset>
+            <legend>Driver File Option</legend>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="driverFileOption" value="manual" checked onchange="toggleDriverFileOption()"> Specify file name manually
+              </label>
+              <label>
+                <input type="radio" name="driverFileOption" value="upload" onchange="toggleDriverFileOption()"> Upload .inf file to auto-detect
+              </label>
+            </div>
+            <div id="manualDriverFileDiv">
+              <label for="driverModelFile">Printer Driver Model File Name:</label>
+              <input type="text" id="driverModelFile" placeholder="BROHL17A.INF" oninput="updateAllPreviews()">
+            </div>
+            <div id="uploadInfDiv" style="display:none;">
+              <label for="infFile">Upload .inf File:</label>
+              <input type="file" id="infFile" accept=".inf">
+              <p>The file name will be used as the driver file name and its contents will populate available model names.</p>
+            </div>
+          </fieldset>
+          
+          <fieldset style="margin-top:1rem;">
+            <legend>Driver Model Name Option</legend>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="driverModelNameOption" value="manual" checked onchange="toggleDriverModelNameOption()"> Enter manually
+              </label>
+              <label>
+                <input type="radio" name="driverModelNameOption" value="select" onchange="toggleDriverModelNameOption()"> Select from INF file options
+              </label>
+            </div>
+            <div id="manualDriverModelNameDiv">
+              <label for="driverModelNameText">Printer Driver Model Name (Manual):</label>
+              <input type="text" id="driverModelNameText" placeholder="Brother HL-L2350DW series" oninput="updateAllPreviews()">
+            </div>
+            <div id="selectDriverModelNameDiv" style="display:none;">
+              <label for="driverModelNameSelect">Printer Driver Model Name (Select):</label>
+              <select id="driverModelNameSelect" onchange="updateAllPreviews()">
+                <option value="">--Select Model--</option>
+              </select>
+            </div>
+          </fieldset>
+          
+          <div>
+            <button class="nav" type="button" onclick="previousSection('section2', 'section1')">Previous</button>
+            <button class="nav" type="button" onclick="nextSection('section2', 'section3')">Next</button>
+          </div>
+        </div>
+        
+        <!-- Section 3: Driver & Config Settings -->
+        <div class="section" id="section3" style="display: none;">
+          <h2>Driver &amp; Config Settings</h2>
+          <label for="driverZipFile">Printer Driver ZIP File Name (Required):</label>
+          <input type="text" id="driverZipFile" placeholder="Brother_HL_L2350DW.zip" oninput="updateAllPreviews()">
+          
+          <label for="configFilePath">Config File Path (Optional):</label>
+          <input type="text" id="configFilePath" placeholder="config.dat" oninput="updateAllPreviews()">
+          
+          <button class="nav" type="button" onclick="previousSection('section3', 'section2')">Previous</button>
+        </div>
+        
+        <!-- Previews -->
+        <h2>Install Command Preview</h2>
+        <pre id="installCommandPreview"></pre>
+        
+        <h2>Uninstall Command Preview</h2>
+        <pre id="uninstallCommandPreview"></pre>
+      </div>
+    </div>
+    
+    <!-- Detection Tab -->
+    <div id="Detection" class="tabcontent">
+      <h2>Detection Registry Instructions</h2>
+      <pre id="detectionPreview"></pre>
+    </div>
+    
+    <!-- Driver Downloads Tab -->
+    <div id="DriverDownloads" class="tabcontent">
+      <div id="driverDownloadSection" class="section">
+        <h2>Driver ZIP File Downloads</h2>
+        <label for="driverZipSelect">Select a Driver ZIP File:</label>
+        <select id="driverZipSelect">
+          <option value="">--Select Driver ZIP--</option>
+        </select>
+        <button type="button" onclick="downloadDriver()">Download</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Mapping of driver ZIP file names to download URLs.
+    const driverDownloads = {
+      "Brother_HL_L2350DW.zip": "https://raw.githubusercontent.com/NickJongens/IntunePrinterDeployment/cd4940c2b9cd6b292ed19ae83735380e398732d1/Brother_HL_L2350DW.zip",
+      "Brother_MFC_L3770CDW.zip": "https://raw.githubusercontent.com/NickJongens/IntunePrinterDeployment/cd4940c2b9cd6b292ed19ae83735380e398732d1/Brother_MFC_L3770CDW.zip",
+      "Brother_TD_4420DN.zip": "https://raw.githubusercontent.com/NickJongens/IntunePrinterDeployment/cd4940c2b9cd6b292ed19ae83735380e398732d1/Brother_TD_4420DN.zip",
+      "HP_LaserJet_Pro_M404-M405.zip": "https://raw.githubusercontent.com/NickJongens/IntunePrinterDeployment/cd4940c2b9cd6b292ed19ae83735380e398732d1/HP_LaserJet_Pro_M404-M405.zip",
+      "HP_LaserJet_Pro_M479f.zip": "https://raw.githubusercontent.com/NickJongens/IntunePrinterDeployment/cd4940c2b9cd6b292ed19ae83735380e398732d1/HP_LaserJet_Pro_M479f.zip"
+    };
+
+    // Populate the driver ZIP dropdown.
+    function populateDriverZipDropdown() {
+      const selectEl = document.getElementById("driverZipSelect");
+      selectEl.innerHTML = '<option value="">--Select Driver ZIP--</option>';
+      for (const zip in driverDownloads) {
+        const option = document.createElement("option");
+        option.value = zip;
+        option.textContent = zip;
+        selectEl.appendChild(option);
+      }
+    }
+    populateDriverZipDropdown();
+    
+    // Download function for driver ZIP files.
+    function downloadDriver() {
+      const selected = (document.getElementById("driverZipSelect")?.value || "");
+      const url = driverDownloads[selected];
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        alert("Please select a driver ZIP file to download.");
+      }
+    }
+    
+    // Tab functions.
+    function openTab(evt, tabName) {
+      const tabcontent = document.getElementsByClassName("tabcontent");
+      for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      const tablinks = document.getElementsByClassName("tablinks");
+      for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+    
+    // Section navigation functions.
+    function nextSection(currentId, nextId) {
+      document.getElementById(currentId).style.display = "none";
+      document.getElementById(nextId).style.display = "block";
+    }
+    function previousSection(currentId, prevId) {
+      document.getElementById(currentId).style.display = "none";
+      document.getElementById(prevId).style.display = "block";
+    }
+    
+    // Toggle between manual and upload options for driver file.
+    function toggleDriverFileOption() {
+      const selected = document.querySelector('input[name="driverFileOption"]:checked')?.value;
+      if (selected === "manual") {
+        document.getElementById("manualDriverFileDiv").style.display = "block";
+        document.getElementById("uploadInfDiv").style.display = "none";
+      } else {
+        document.getElementById("manualDriverFileDiv").style.display = "none";
+        document.getElementById("uploadInfDiv").style.display = "block";
+      }
+      updateAllPreviews();
+    }
+    
+    // Toggle between manual and select options for driver model name.
+    function toggleDriverModelNameOption() {
+      const selected = document.querySelector('input[name="driverModelNameOption"]:checked')?.value;
+      if (selected === "manual") {
+        document.getElementById("manualDriverModelNameDiv").style.display = "block";
+        document.getElementById("selectDriverModelNameDiv").style.display = "none";
+      } else {
+        document.getElementById("manualDriverModelNameDiv").style.display = "none";
+        document.getElementById("selectDriverModelNameDiv").style.display = "block";
+      }
+      updateAllPreviews();
+    }
+    
+    function parseInfModels(infContent) {
+    const lines = infContent.split(/\r?\n/);
+    const models = new Set();
+    let currentSection = "";
+
+    for (const line of lines) {
+        if (line.trim().startsWith(';')) continue; // Ignore comments
+
+        const sectionMatch = line.match(/^\s*\[([^\]]+)\]/);
+        if (sectionMatch) {
+            currentSection = sectionMatch[1].trim().toUpperCase();
+            continue;
+        }
+
+        if (currentSection.startsWith("PRINTERS") || currentSection === "DRIVERNAME") {
+            const modelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+            if (modelMatch) models.add(modelMatch[1].trim());
+        } else if (currentSection === "STRINGS") {
+            const printerKeyMatch = line.match(/^\s*PRINTER\d+\s*=\s*"([^"]+)"\s*$/i);
+            if (printerKeyMatch) models.add(printerKeyMatch[1].trim());
+        } else if (currentSection.startsWith("BRDRV_WINUSB")) { 
+            // Match lines like "Brother HL-2290" =USB_Install1009, USB\VID_04F9&PID_0093&MI_01
+            const usbModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+            if (usbModelMatch) models.add(usbModelMatch[1].trim());
+        }
+    }
+
+    return Array.from(models);
+}
+
+    
+    // INF file upload handling – auto-select options and populate model dropdown.
+    document.getElementById("infFile").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      // Auto-select "upload" for driver file and "select" for driver model name.
+      document.querySelector('input[name="driverFileOption"][value="upload"]').checked = true;
+      toggleDriverFileOption();
+      document.querySelector('input[name="driverModelNameOption"][value="select"]').checked = true;
+      toggleDriverModelNameOption();
+      
+      // Store the file name for use as the driver model file name.
+      document.infUploadedFileName = file.name;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        const models = parseInfModels(content);
+        const selectEl = document.getElementById("driverModelNameSelect");
+        selectEl.innerHTML = '<option value="">--Select Model--</option>';
+        if (models.length > 0) {
+          models.forEach(model => {
+            const option = document.createElement("option");
+            option.value = model;
+            option.textContent = model;
+            selectEl.appendChild(option);
+          });
+        } else {
+          const option = document.createElement("option");
+          option.value = "";
+          option.textContent = "No models found in INF";
+          selectEl.appendChild(option);
+        }
+        updateAllPreviews();
+      };
+      reader.readAsText(file);
+    });
+    
+    // Update the Install Command Preview.
+    function updateInstallPreview() {
+      const ipAddress = (document.getElementById("ipAddress")?.value || "").trim();
+      const portName = (document.getElementById("portName")?.value || "").trim();
+      const printerName = (document.getElementById("printerName")?.value || "").trim();
+      
+      let driverModelFile = "";
+      if ((document.querySelector('input[name="driverFileOption"]:checked')?.value || "") === "manual") {
+        driverModelFile = (document.getElementById("driverModelFile")?.value || "").trim();
+      } else {
+        driverModelFile = document.infUploadedFileName || "";
+      }
+      
+      let driverModelName = "";
+      if ((document.querySelector('input[name="driverModelNameOption"]:checked')?.value || "") === "manual") {
+        driverModelName = (document.getElementById("driverModelNameText")?.value || "").trim();
+      } else {
+        driverModelName = (document.getElementById("driverModelNameSelect")?.value || "");
+      }
+      
+      const driverZipFile = (document.getElementById("driverZipFile")?.value || "").trim();
+      const configFilePath = (document.getElementById("configFilePath")?.value || "").trim();
+      
+      let command = `powershell.exe -ExecutionPolicy Bypass -File Install.ps1 `;
+      if (ipAddress) command += `-PrinterPortIPAddress "<strong style='color:#bb86fc;'>${ipAddress}</strong>" `;
+      if (portName) command += `-PrinterPortName "<strong style='color:#bb86fc;'>${portName}</strong>" `;
+      if (printerName) command += `-PrinterName "<strong style='color:#bb86fc;'>${printerName}</strong>" `;
+      if (driverModelName) command += `-PrinterDriverModelName "<strong style='color:#bb86fc;'>${driverModelName}</strong>" `;
+      if (driverZipFile) command += `-PrinterDriverZipFileName "<strong style='color:#bb86fc;'>${driverZipFile}</strong>" `;
+      if (driverModelFile) command += `-PrinterDriverModelFileName "<strong style='color:#bb86fc;'>${driverModelFile}</strong>" `;
+      if (configFilePath) command += `-ConfigFilePath "<strong style='color:#bb86fc;'>${configFilePath}</strong>" `;
+      
+      document.getElementById("installCommandPreview").innerHTML = command;
+    }
+    
+    // Update the Uninstall Command Preview.
+    function updateUninstallPreview() {
+      const printerName = (document.getElementById("printerName")?.value || "").trim();
+      const portName = (document.getElementById("portName")?.value || "").trim();
+      let command = 'powershell.exe -ExecutionPolicy Bypass -File Uninstall.ps1 ';
+      if (printerName) command += `-PrinterName "<strong style='color:#bb86fc;'>${printerName}</strong>" `;
+      if (portName) command += `-PrinterPortName "<strong style='color:#bb86fc;'>${portName}</strong>" `;
+      document.getElementById("uninstallCommandPreview").innerHTML = command;
+    }
+    
+    // Update the Detection Registry Instructions.
+    function updateDetectionPreview() {
+      const printerName = (document.getElementById("printerName")?.value || "<PrinterName>").trim();
+      const detectionText = `Registry<br>
+Key Path: HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\<strong style="color:#bb86fc;">${printerName}</strong><br>
+Value: Name<br>
+Detection method: String<br>
+Operator: Equals<br>
+Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
+      document.getElementById("detectionPreview").innerHTML = detectionText;
+    }
+    
+    // Update all previews.
+    function updateAllPreviews() {
+      updateInstallPreview();
+      updateUninstallPreview();
+      updateDetectionPreview();
+    }
+    
+    // Update previews on any input change.
+    document.querySelectorAll("input, select").forEach(el => {
+      el.addEventListener("input", updateAllPreviews);
+    });
+  </script>
+  
+</body>
+</html>

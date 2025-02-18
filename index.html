@@ -131,6 +131,15 @@
       margin-bottom: 1rem;
       color: #e0e0e0;
     }
+
+    /* Footer Styling */
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      font-size: 12px;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
@@ -141,7 +150,7 @@
     <!-- Tab Navigation -->
     <div class="tab">
       <button class="tablinks active" onclick="openTab(event, 'Config')">Config</button>
-      <button class="tablinks" onclick="openTab(event, 'Detection')">Detection</button>
+      <button class="tablinks" onclick="openTab(event, 'About')">About</button>
     </div>
     
     <!-- Config Tab -->
@@ -236,18 +245,41 @@
           <h2>Uninstall Command</h2>
           <pre id="uninstallCommandPreview"></pre>
           
+          <!-- Detection Registry Instructions moved below Uninstall Command -->
+          <h2>Detection Registry Instructions</h2>
+          <pre id="detectionPreview"></pre>
+          
           <!-- Download Package Button -->
           <button class="nav" type="button" onclick="downloadPackage()">Download Package</button>
         </div>
       </div>
     </div>
     
-    <!-- Detection Tab -->
-    <div id="Detection" class="tabcontent">
-      <h2>Detection Registry Instructions</h2>
-      <pre id="detectionPreview"></pre>
+    <!-- About Tab -->
+    <!-- About Tab -->
+    <div id="About" class="tabcontent">
+      <h2>About</h2>
+      <p>
+      <p>About Printune</p>
+        
+      <p>After numerous frustrating experiences with inconsistent printer deployments in Intune—often due to a lack of precision and varying levels of technical expertise.</p>
+        <p> I developed Printune to simplify the entire process, ensuring that deploying printers via Intune is not only easier but also far more reliable.</p>
+        
+      <p>With Printune, you simply:</p> 
+       <p> - Fill out the details about your printer.</p>
+       <p> - Download the tailored package.</p>
+       <p> - Use the IntuneWinAppUtil to package your .intunewin file.</p>
+       <p> - Upload the package to Intune with the provided details.</p>
+
+        <p>For more information or to contribute, please visit the <a href="https://github.com/NickJongens/Printune" target="_blank" style="color:#bb86fc;">repository</a>.</p>
+      <p>Version: 1.0</p>
     </div>
   </div>
+  
+  <!-- Footer -->
+  <footer>
+    &copy; Nick Jongens - 2025
+  </footer>
   
   <!-- Include JSZip Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -327,35 +359,34 @@
     /* ---------------------------
        INF File Handling
        --------------------------- */
-       function parseInfModels(infContent) {
-  const lines = infContent.split(/\r?\n/);
-  const models = new Set();
-  let currentSection = "";
-  for (const line of lines) {
-    if (line.trim().startsWith(';')) continue;
-    const sectionMatch = line.match(/^\s*\[([^\]]+)\]/);
-    if (sectionMatch) {
-      currentSection = sectionMatch[1].trim().toUpperCase();
-      continue;
+    function parseInfModels(infContent) {
+      const lines = infContent.split(/\r?\n/);
+      const models = new Set();
+      let currentSection = "";
+      for (const line of lines) {
+        if (line.trim().startsWith(';')) continue;
+        const sectionMatch = line.match(/^\s*\[([^\]]+)\]/);
+        if (sectionMatch) {
+          currentSection = sectionMatch[1].trim().toUpperCase();
+          continue;
+        }
+        if (currentSection.startsWith("PRINTERS") || currentSection === "DRIVERNAME") {
+          const modelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+          if (modelMatch) models.add(modelMatch[1].trim());
+        } else if (currentSection === "STRINGS") {
+          const printerKeyMatch = line.match(/^\s*PRINTER\d+\s*=\s*"([^"]+)"\s*$/i);
+          if (printerKeyMatch) models.add(printerKeyMatch[1].trim());
+        } else if (currentSection.startsWith("BRDRV_WINUSB")) { 
+          const usbModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+          if (usbModelMatch) models.add(usbModelMatch[1].trim());
+        } else if (currentSection.startsWith("FFIDPF")) {
+          // Handle INF sections like [FFIDPF.NTamd64] or [FFIDPF.NTAMD64.6.0]
+          const ffidpfModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+          if (ffidpfModelMatch) models.add(ffidpfModelMatch[1].trim());
+        }
+      }
+      return Array.from(models);
     }
-    if (currentSection.startsWith("PRINTERS") || currentSection === "DRIVERNAME") {
-      const modelMatch = line.match(/^\s*"([^"]+)"\s*=/);
-      if (modelMatch) models.add(modelMatch[1].trim());
-    } else if (currentSection === "STRINGS") {
-      const printerKeyMatch = line.match(/^\s*PRINTER\d+\s*=\s*"([^"]+)"\s*$/i);
-      if (printerKeyMatch) models.add(printerKeyMatch[1].trim());
-    } else if (currentSection.startsWith("BRDRV_WINUSB")) { 
-      const usbModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
-      if (usbModelMatch) models.add(usbModelMatch[1].trim());
-    } else if (currentSection.startsWith("FFIDPF")) {
-      // Handle INF sections like [FFIDPF.NTamd64] or [FFIDPF.NTAMD64.6.0]
-      const ffidpfModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
-      if (ffidpfModelMatch) models.add(ffidpfModelMatch[1].trim());
-    }
-  }
-  return Array.from(models);
-}
-
     document.getElementById("infFile").addEventListener("change", function(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -479,66 +510,65 @@ Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
     /* ---------------------------
        Package Download Function
        --------------------------- */
-       function downloadPackage() {
-  const zip = new JSZip();
-  const promises = [];
-
-  // Fetch the static Install.ps1 file from the root
-  const installPromise = fetch("/Install.ps1")
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Install.ps1 file not found");
+    function downloadPackage() {
+      const zip = new JSZip();
+      const promises = [];
+    
+      // Fetch the static Install.ps1 file from the root
+      const installPromise = fetch("/Install.ps1")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Install.ps1 file not found");
+          }
+          return response.text();
+        })
+        .then(text => {
+          zip.file("Install.ps1", text);
+        });
+      promises.push(installPromise);
+    
+      // Fetch the static Uninstall.ps1 file from the root
+      const uninstallPromise = fetch("/Uninstall.ps1")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Uninstall.ps1 file not found");
+          }
+          return response.text();
+        })
+        .then(text => {
+          zip.file("Uninstall.ps1", text);
+        });
+      promises.push(uninstallPromise);
+    
+      // If a driver ZIP file is selected, fetch it from the root directory
+      const driverZipFileName = (document.getElementById("driverZipFile")?.value || "").trim();
+      if (driverZipFileName) {
+        const driverPromise = fetch(`/${driverZipFileName}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Driver ZIP file not found");
+            }
+            return response.arrayBuffer();
+          })
+          .then(data => {
+            zip.file(driverZipFileName, data);
+          });
+        promises.push(driverPromise);
       }
-      return response.text();
-    })
-    .then(text => {
-      zip.file("Install.ps1", text);
-    });
-  promises.push(installPromise);
-
-  // Fetch the static Uninstall.ps1 file from the root
-  const uninstallPromise = fetch("/Uninstall.ps1")
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Uninstall.ps1 file not found");
-      }
-      return response.text();
-    })
-    .then(text => {
-      zip.file("Uninstall.ps1", text);
-    });
-  promises.push(uninstallPromise);
-
-  // If a driver ZIP file is selected, fetch it from the root directory
-  const driverZipFileName = (document.getElementById("driverZipFile")?.value || "").trim();
-  if (driverZipFileName) {
-    const driverPromise = fetch(`/${driverZipFileName}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Driver ZIP file not found");
-        }
-        return response.arrayBuffer();
-      })
-      .then(data => {
-        zip.file(driverZipFileName, data);
-      });
-    promises.push(driverPromise);
-  }
-
-  // Once all files are fetched, generate the ZIP and trigger the download
-  Promise.all(promises)
-    .then(() => zip.generateAsync({ type: "blob" }))
-    .then(content => {
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(content);
-      link.download = "PrinterDeploymentPackage.zip";
-      link.click();
-    })
-    .catch(error => {
-      console.error("Error generating package:", error);
-    });
-}
-
+    
+      // Once all files are fetched, generate the ZIP and trigger the download
+      Promise.all(promises)
+        .then(() => zip.generateAsync({ type: "blob" }))
+        .then(content => {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(content);
+          link.download = "PrinterDeploymentPackage.zip";
+          link.click();
+        })
+        .catch(error => {
+          console.error("Error generating package:", error);
+        });
+    }
   </script>
   
 </body>

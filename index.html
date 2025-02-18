@@ -327,30 +327,35 @@
     /* ---------------------------
        INF File Handling
        --------------------------- */
-    function parseInfModels(infContent) {
-      const lines = infContent.split(/\r?\n/);
-      const models = new Set();
-      let currentSection = "";
-      for (const line of lines) {
-          if (line.trim().startsWith(';')) continue;
-          const sectionMatch = line.match(/^\s*\[([^\]]+)\]/);
-          if (sectionMatch) {
-              currentSection = sectionMatch[1].trim().toUpperCase();
-              continue;
-          }
-          if (currentSection.startsWith("PRINTERS") || currentSection === "DRIVERNAME") {
-              const modelMatch = line.match(/^\s*"([^"]+)"\s*=/);
-              if (modelMatch) models.add(modelMatch[1].trim());
-          } else if (currentSection === "STRINGS") {
-              const printerKeyMatch = line.match(/^\s*PRINTER\d+\s*=\s*"([^"]+)"\s*$/i);
-              if (printerKeyMatch) models.add(printerKeyMatch[1].trim());
-          } else if (currentSection.startsWith("BRDRV_WINUSB")) { 
-              const usbModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
-              if (usbModelMatch) models.add(usbModelMatch[1].trim());
-          }
-      }
-      return Array.from(models);
+       function parseInfModels(infContent) {
+  const lines = infContent.split(/\r?\n/);
+  const models = new Set();
+  let currentSection = "";
+  for (const line of lines) {
+    if (line.trim().startsWith(';')) continue;
+    const sectionMatch = line.match(/^\s*\[([^\]]+)\]/);
+    if (sectionMatch) {
+      currentSection = sectionMatch[1].trim().toUpperCase();
+      continue;
     }
+    if (currentSection.startsWith("PRINTERS") || currentSection === "DRIVERNAME") {
+      const modelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+      if (modelMatch) models.add(modelMatch[1].trim());
+    } else if (currentSection === "STRINGS") {
+      const printerKeyMatch = line.match(/^\s*PRINTER\d+\s*=\s*"([^"]+)"\s*$/i);
+      if (printerKeyMatch) models.add(printerKeyMatch[1].trim());
+    } else if (currentSection.startsWith("BRDRV_WINUSB")) { 
+      const usbModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+      if (usbModelMatch) models.add(usbModelMatch[1].trim());
+    } else if (currentSection.startsWith("FFIDPF")) {
+      // Handle INF sections like [FFIDPF.NTamd64] or [FFIDPF.NTAMD64.6.0]
+      const ffidpfModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
+      if (ffidpfModelMatch) models.add(ffidpfModelMatch[1].trim());
+    }
+  }
+  return Array.from(models);
+}
+
     document.getElementById("infFile").addEventListener("change", function(event) {
       const file = event.target.files[0];
       if (!file) return;

@@ -479,54 +479,66 @@ Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
     /* ---------------------------
        Package Download Function
        --------------------------- */
-    function downloadPackage() {
-      const zip = new JSZip();
-      // Add Install.ps1 and Uninstall.ps1 scripts
-      const installContent = getPlainInstallCommand();
-      const uninstallContent = getPlainUninstallCommand();
-      zip.file("Install.ps1", installContent);
-      zip.file("Uninstall.ps1", uninstallContent);
-      
-      const driverZipFileName = (document.getElementById("driverZipFile")?.value || "").trim();
-      if (driverZipFileName) {
-        // Fetch the driver ZIP file from the root directory
-        fetch(`/${driverZipFileName}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error("Driver ZIP file not found");
-            }
-            return response.arrayBuffer();
-          })
-          .then(data => {
-            zip.file(driverZipFileName, data);
-            return zip.generateAsync({type:"blob"});
-          })
-          .then(content => {
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(content);
-            link.download = "PrinterDeploymentPackage.zip";
-            link.click();
-          })
-          .catch(error => {
-            console.error("Error fetching driver ZIP file: ", error);
-            // Generate package without the driver ZIP file if fetching fails
-            zip.generateAsync({type:"blob"}).then(content => {
-              const link = document.createElement("a");
-              link.href = URL.createObjectURL(content);
-              link.download = "PrinterDeploymentPackage.zip";
-              link.click();
-            });
-          });
-      } else {
-        // No driver file selected; generate package with just the scripts.
-        zip.generateAsync({type:"blob"}).then(content => {
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(content);
-          link.download = "PrinterDeploymentPackage.zip";
-          link.click();
-        });
+       function downloadPackage() {
+  const zip = new JSZip();
+  const promises = [];
+
+  // Fetch the static Install.ps1 file from the root
+  const installPromise = fetch("/Install.ps1")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Install.ps1 file not found");
       }
-    }
+      return response.text();
+    })
+    .then(text => {
+      zip.file("Install.ps1", text);
+    });
+  promises.push(installPromise);
+
+  // Fetch the static Uninstall.ps1 file from the root
+  const uninstallPromise = fetch("/Uninstall.ps1")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Uninstall.ps1 file not found");
+      }
+      return response.text();
+    })
+    .then(text => {
+      zip.file("Uninstall.ps1", text);
+    });
+  promises.push(uninstallPromise);
+
+  // If a driver ZIP file is selected, fetch it from the root directory
+  const driverZipFileName = (document.getElementById("driverZipFile")?.value || "").trim();
+  if (driverZipFileName) {
+    const driverPromise = fetch(`/${driverZipFileName}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Driver ZIP file not found");
+        }
+        return response.arrayBuffer();
+      })
+      .then(data => {
+        zip.file(driverZipFileName, data);
+      });
+    promises.push(driverPromise);
+  }
+
+  // Once all files are fetched, generate the ZIP and trigger the download
+  Promise.all(promises)
+    .then(() => zip.generateAsync({ type: "blob" }))
+    .then(content => {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(content);
+      link.download = "PrinterDeploymentPackage.zip";
+      link.click();
+    })
+    .catch(error => {
+      console.error("Error generating package:", error);
+    });
+}
+
   </script>
   
 </body>

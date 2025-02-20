@@ -3,12 +3,19 @@
 You can export a printer config using the following command:
 
 ```
+# Change directory to where you want the config exported to
+cd C:\Temp
+rundll32 printui.dll,PrintUIEntry /Ss /n "<Printer Name>" /a "config.dat"
+```
+
+```
 rundll32 printui.dll,PrintUIEntry /Ss /n "<Printer Name>" /a "config.dat"
 ```
 
 E.g. 
 
 ```
+cd C:\Temp
 rundll32 printui.dll,PrintUIEntry /Ss /n "Upstairs Printer" /a "config.dat"
 ```
 

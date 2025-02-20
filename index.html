@@ -16,13 +16,12 @@
     header {
       background: #bb86fc;
       color: white;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
+      padding: 0.5rem;
       margin-top: 1.5rem;
       text-align: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.5);
       position: relative;
-      left: 25%;  /* Center it horizontally */
+      left: 25%;  /* Center horizontally on larger screens */
       max-width: 50%;
       border-radius: 2px;
     }
@@ -69,6 +68,7 @@
       display: none;
     }
     
+
     /* Section Styling */
     .section {
       margin-bottom: 1.5rem;
@@ -97,13 +97,50 @@
       background: #333;
       color: #e0e0e0;
     }
-    .radio-group {
-      margin-top: 0.5rem;
+
+    /* About Section Styling */
+    #About {
+      padding: 1rem;
+      background: linear-gradient(135deg, #2e2e2e, #1e1e1e);
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
-    .radio-group label {
-      margin-right: 1rem;
-      font-weight: 400;
+    #About h2 {
+      color: #bb86fc;
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 1rem;
     }
+    #About p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 0.8rem;
+    }
+    #About a {
+      color: #bb86fc;
+      text-decoration: none;
+    }
+    #About a:hover {
+      text-decoration: underline;
+    }
+    
+    /* New: Driver Details Horizontal Layout */
+    .driver-details-container {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .driver-details-column {
+      flex: 1;
+      min-width: 200px;
+    }
+    .driver-details-column h3 {
+      margin: 0.5rem 0 0.3rem;
+      font-size: 16px;
+      color: #bb86fc;
+    }
+    
+    /* Navigation Button Styling */
     button.nav {
       margin-top: 1rem;
       padding: 0.6rem 1.2rem;
@@ -119,19 +156,60 @@
       background: #9b6bfc;
     }
     
-    /* Previews Styling */
-    pre {
+    /* Command Preview Container */
+    .preview-container {
+      display: flex;
+      align-items: center;
       background: #333;
-      padding: 1rem;
+      padding: 0.5rem;
       border: 1px solid #555;
       border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .preview-text {
+      flex-grow: 1;
       white-space: pre-wrap;
       word-wrap: break-word;
       font-size: 14px;
-      margin-bottom: 1rem;
       color: #e0e0e0;
     }
-
+    .copy-btn {
+      margin-left: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.2rem;
+    }
+    .copy-btn svg {
+      vertical-align: middle;
+      fill: #BB86FC;
+    }
+    
+    /* Detection Registry Instructions */
+    .detection-block {
+      margin-bottom: 1rem;
+    }
+    .detection-label {
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+    }
+    .detection-value {
+      margin-left: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .detection-purple {
+      color: #bb86fc;
+    }
+    
+    /* Navigation Group for Section 3 */
+    .nav-group {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
     /* Footer Styling */
     footer {
       text-align: center;
@@ -140,11 +218,26 @@
       font-size: 12px;
       color: #aaa;
     }
+    
+    /* Responsive styling for mobile devices */
+    @media (max-width: 600px) {
+      .container {
+        max-width: 90%;
+        padding: 1rem;
+      }
+      header {
+        left: 5%;
+        max-width: 90%;
+      }
+      .driver-details-container {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Intune Printer Deployment Toolkit</h1>
+    <h1>Printune</h1>
   </header>
   <div class="container">
     <!-- Tab Navigation -->
@@ -171,53 +264,35 @@
           <button class="nav" type="button" onclick="nextSection('section1', 'section2')">Next</button>
         </div>
         
-        <!-- Section 2: Driver Details -->
+        <!-- Section 2: Driver Details (Redesigned) -->
         <div class="section" id="section2" style="display: none;">
           <h2>Driver Details</h2>
-          <fieldset>
-            <legend>Driver File Option</legend>
-            <div class="radio-group">
-              <label>
-                <input type="radio" name="driverFileOption" value="manual" checked onchange="toggleDriverFileOption()"> Specify file name manually
-              </label>
-              <label>
-                <input type="radio" name="driverFileOption" value="upload" onchange="toggleDriverFileOption()"> Upload .inf file to auto-detect
-              </label>
-            </div>
-            <div id="manualDriverFileDiv">
-              <label for="driverModelFile">Printer Driver Model File Name:</label>
+          <!-- First Row: Driver File -->
+          <div class="driver-details-container">
+            <div class="driver-details-column">
+              <h3>Driver File (Manual)</h3>
               <input type="text" id="driverModelFile" placeholder="BROHL17A.INF" oninput="updateAllPreviews()">
             </div>
-            <div id="uploadInfDiv" style="display:none;">
-              <label for="infFile">Upload .inf File:</label>
+            <div class="driver-details-column">
+              <h3>Upload .inf</h3>
               <input type="file" id="infFile" accept=".inf">
-              <p>The file name will be used as the driver file name and its contents will populate available model names.</p>
+              <p style="font-size: 12px; color: #aaa; margin: 0.3rem 0 0;">Auto-detect models</p>
             </div>
-          </fieldset>
-          
-          <fieldset style="margin-top:1rem;">
-            <legend>Driver Model Name Option</legend>
-            <div class="radio-group">
-              <label>
-                <input type="radio" name="driverModelNameOption" value="manual" checked onchange="toggleDriverModelNameOption()"> Enter manually
-              </label>
-              <label>
-                <input type="radio" name="driverModelNameOption" value="select" onchange="toggleDriverModelNameOption()"> Select from INF file options
-              </label>
-            </div>
-            <div id="manualDriverModelNameDiv">
-              <label for="driverModelNameText">Printer Driver Model Name (Manual):</label>
+          </div>
+          <!-- Second Row: Driver Model Name -->
+          <div class="driver-details-container" style="margin-top: 1rem;">
+            <div class="driver-details-column">
+              <h3>Driver Model Name (Manual)</h3>
               <input type="text" id="driverModelNameText" placeholder="Brother HL-L2350DW series" oninput="updateAllPreviews()">
             </div>
-            <div id="selectDriverModelNameDiv" style="display:none;">
-              <label for="driverModelNameSelect">Printer Driver Model Name (Select):</label>
+            <div class="driver-details-column">
+              <h3>Select Model from INF</h3>
               <select id="driverModelNameSelect" onchange="updateAllPreviews()">
                 <option value="">--Select Model--</option>
               </select>
             </div>
-          </fieldset>
-          
-          <div>
+          </div>
+          <div style="margin-top:1rem;">
             <button class="nav" type="button" onclick="previousSection('section2', 'section1')">Previous</button>
             <button class="nav" type="button" onclick="nextSection('section2', 'section3')">Next</button>
           </div>
@@ -234,44 +309,45 @@
           <label for="configFilePath">Config File Path (Optional):</label>
           <input type="text" id="configFilePath" placeholder="config.dat" oninput="updateAllPreviews()">
           
-          <button class="nav" type="button" onclick="previousSection('section3', 'section2')">Previous</button>
-          
-          <!-- Spacer for additional vertical space -->
-          <div style="margin-top:1.5rem;"></div>
+          <!-- Navigation Group: Previous & Download Package -->
+          <div class="nav-group">
+            <button class="nav" type="button" onclick="previousSection('section3', 'section2')">Previous</button>
+            <button class="nav" type="button" onclick="downloadPackage()">Download Package</button>
+          </div>
           
           <h2>Install Command</h2>
-          <pre id="installCommandPreview"></pre>
+          <div class="preview-container">
+            <div id="installCommandPreview" class="preview-text"></div>
+            <button class="copy-btn" onclick="copyText('installCommandPreview', this)">
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+              </svg>
+            </button>
+          </div>
           
           <h2>Uninstall Command</h2>
-          <pre id="uninstallCommandPreview"></pre>
+          <div class="preview-container">
+            <div id="uninstallCommandPreview" class="preview-text"></div>
+            <button class="copy-btn" onclick="copyText('uninstallCommandPreview', this)">
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+              </svg>
+            </button>
+          </div>
           
-          <!-- Detection Registry Instructions moved below Uninstall Command -->
           <h2>Detection Registry Instructions</h2>
-          <pre id="detectionPreview"></pre>
-          
-          <!-- Download Package Button -->
-          <button class="nav" type="button" onclick="downloadPackage()">Download Package</button>
+          <div id="detectionPreview"></div>
         </div>
       </div>
     </div>
     
     <!-- About Tab -->
     <div id="About" class="tabcontent">
-      <h2>About</h2>
-      <p>
-      <p>About Printune</p>
-        
-      <p>After numerous frustrating experiences with inconsistent printer deployments in Intune—often due to a lack of precision and varying levels of technical expertise.</p>
-        <p> I developed Printune to simplify the entire process, ensuring that deploying printers via Intune is not only easier but also far more reliable.</p>
-        
-      <p>With Printune, you simply:</p> 
-       <p> - Fill out the details about your printer.</p>
-       <p> - Download the tailored package.</p>
-       <p> - Use the IntuneWinAppUtil to package your .intunewin file.</p>
-       <p> - Upload the package to Intune with the provided details.</p>
-
-        <p>For more information or to contribute, please visit the <a href="https://github.com/NickJongens/Printune" target="_blank" style="color:#bb86fc;">repository</a>.</p>
-      <p>Version: 1.0</p>
+      <h2>About Printune</h2>
+      <p style="text-align: center">Printune was born out of countless frustrating experiences discovering inconsistent printer deployments via Intune. </p>
+      <p style="text-align: center">Tired of imprecise configurations and the challenges of manual setups, I created a toolkit that makes deploying printers faster and more consistent for all levels of skill.</p>
+      <p style="text-align: center">This streamlined interface and smart automation simplifies every step – from specifying printer details to organising deployment scripts.</p>
+      <p style="text-align: center"><a href="https://github.com/NickJongens/Printune" target="_blank">GitHub repository</a></p>
     </div>
   </div>
   
@@ -284,6 +360,22 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   
   <script>
+
+    // Global icon variables for copy/tick buttons
+    // Global icon variables for copy/tick buttons
+    const copyIconHTML = `<svg width="16" height="16" viewBox="0 0 24 24">
+      <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+    </svg>`;
+    const tickIconHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>`;
+    
+    function animateCopyButton(btn, originalIconHTML) {
+      btn.innerHTML = tickIconHTML;
+      setTimeout(() => {
+        btn.innerHTML = originalIconHTML;
+      }, 1000);
+    }
     /* ---------------------------
        Dynamic Driver List
        --------------------------- */
@@ -330,32 +422,6 @@
     }
     
     /* ---------------------------
-       Toggle Options
-       --------------------------- */
-    function toggleDriverFileOption() {
-      const selected = document.querySelector('input[name="driverFileOption"]:checked')?.value;
-      if (selected === "manual") {
-        document.getElementById("manualDriverFileDiv").style.display = "block";
-        document.getElementById("uploadInfDiv").style.display = "none";
-      } else {
-        document.getElementById("manualDriverFileDiv").style.display = "none";
-        document.getElementById("uploadInfDiv").style.display = "block";
-      }
-      updateAllPreviews();
-    }
-    function toggleDriverModelNameOption() {
-      const selected = document.querySelector('input[name="driverModelNameOption"]:checked')?.value;
-      if (selected === "manual") {
-        document.getElementById("manualDriverModelNameDiv").style.display = "block";
-        document.getElementById("selectDriverModelNameDiv").style.display = "none";
-      } else {
-        document.getElementById("manualDriverModelNameDiv").style.display = "none";
-        document.getElementById("selectDriverModelNameDiv").style.display = "block";
-      }
-      updateAllPreviews();
-    }
-    
-    /* ---------------------------
        INF File Handling
        --------------------------- */
     function parseInfModels(infContent) {
@@ -379,7 +445,6 @@
           const usbModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
           if (usbModelMatch) models.add(usbModelMatch[1].trim());
         } else if (currentSection.startsWith("FFIDPF")) {
-          // Handle INF sections like [FFIDPF.NTamd64] or [FFIDPF.NTAMD64.6.0]
           const ffidpfModelMatch = line.match(/^\s*"([^"]+)"\s*=/);
           if (ffidpfModelMatch) models.add(ffidpfModelMatch[1].trim());
         }
@@ -389,11 +454,6 @@
     document.getElementById("infFile").addEventListener("change", function(event) {
       const file = event.target.files[0];
       if (!file) return;
-      // Auto-select "upload" & "select"
-      document.querySelector('input[name="driverFileOption"][value="upload"]').checked = true;
-      toggleDriverFileOption();
-      document.querySelector('input[name="driverModelNameOption"][value="select"]').checked = true;
-      toggleDriverModelNameOption();
       document.infUploadedFileName = file.name;
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -422,17 +482,14 @@
     /* ---------------------------
        Command Generation
        --------------------------- */
-    // HTML-formatted previews
     function updateInstallPreview() {
       const ipAddress = (document.getElementById("ipAddress")?.value || "").trim();
       const portName = (document.getElementById("portName")?.value || "").trim();
       const printerName = (document.getElementById("printerName")?.value || "").trim();
-      let driverModelFile = (document.querySelector('input[name="driverFileOption"]:checked')?.value === "manual") 
-                              ? (document.getElementById("driverModelFile")?.value || "").trim() 
-                              : (document.infUploadedFileName || "");
-      let driverModelName = (document.querySelector('input[name="driverModelNameOption"]:checked')?.value === "manual") 
-                              ? (document.getElementById("driverModelNameText")?.value || "").trim() 
-                              : (document.getElementById("driverModelNameSelect")?.value || "");
+      // Use uploaded file name if available, otherwise use manual input.
+      let driverModelFile = document.infUploadedFileName ? document.infUploadedFileName : (document.getElementById("driverModelFile")?.value || "").trim();
+      // For driver model name, prefer select value if available.
+      let driverModelName = (document.getElementById("driverModelNameSelect")?.value || "").trim() || (document.getElementById("driverModelNameText")?.value || "").trim();
       const driverZipFile = (document.getElementById("driverZipFile")?.value || "").trim();
       const configFilePath = (document.getElementById("configFilePath")?.value || "").trim();
       
@@ -455,17 +512,12 @@
       if (portName) command += `-PrinterPortName "<strong style='color:#bb86fc;'>${portName}</strong>" `;
       document.getElementById("uninstallCommandPreview").innerHTML = command;
     }
-    // Plain-text commands (for scripts in ZIP)
     function getPlainInstallCommand() {
       const ipAddress = (document.getElementById("ipAddress")?.value || "").trim();
       const portName = (document.getElementById("portName")?.value || "").trim();
       const printerName = (document.getElementById("printerName")?.value || "").trim();
-      let driverModelFile = (document.querySelector('input[name="driverFileOption"]:checked')?.value === "manual") 
-                              ? (document.getElementById("driverModelFile")?.value || "").trim() 
-                              : (document.infUploadedFileName || "");
-      let driverModelName = (document.querySelector('input[name="driverModelNameOption"]:checked')?.value === "manual") 
-                              ? (document.getElementById("driverModelNameText")?.value || "").trim() 
-                              : (document.getElementById("driverModelNameSelect")?.value || "");
+      let driverModelFile = document.infUploadedFileName ? document.infUploadedFileName : (document.getElementById("driverModelFile")?.value || "").trim();
+      let driverModelName = (document.getElementById("driverModelNameSelect")?.value || "").trim() || (document.getElementById("driverModelNameText")?.value || "").trim();
       const driverZipFile = (document.getElementById("driverZipFile")?.value || "").trim();
       const configFilePath = (document.getElementById("configFilePath")?.value || "").trim();
       
@@ -494,17 +546,55 @@
     }
     function updateDetectionPreview() {
       const printerName = (document.getElementById("printerName")?.value || "<PrinterName>").trim();
-      const detectionText = `Registry<br>
-Key Path: HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\<strong style="color:#bb86fc;">${printerName}</strong><br>
-Value name: Name<br>
-Detection method: String comparison<br>
-Operator: Equals<br>
-Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
-      document.getElementById("detectionPreview").innerHTML = detectionText;
+      const container = document.getElementById("detectionPreview");
+      container.innerHTML = "";
+      
+      const detectionFields = [
+        { label: "Registry Key Path:", value: `HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\${printerName}`, copy: true },
+        { label: "Value name:", value: "Name", copy: false },
+        { label: "Detection method:", value: "String comparison", copy: false, purple: true },
+        { label: "Operator:", value: "Equals", copy: false, purple: true },
+        { label: "Value:", value: printerName, copy: true }
+      ];
+      
+      detectionFields.forEach(field => {
+        const block = document.createElement("div");
+        block.className = "detection-block";
+        
+        const labelDiv = document.createElement("div");
+        labelDiv.className = "detection-label";
+        labelDiv.innerText = field.label;
+        block.appendChild(labelDiv);
+        
+        const valueDiv = document.createElement("div");
+        valueDiv.className = "detection-value";
+        if (field.purple) { valueDiv.classList.add("detection-purple"); }
+        valueDiv.innerText = field.value;
+        
+        if (field.copy) {
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.innerHTML = copyIconHTML;
+          btn.onclick = function() {
+            navigator.clipboard.writeText(field.value)
+              .then(() => { animateCopyButton(btn, copyIconHTML); })
+              .catch(err => { console.error("Error copying text:", err); });
+          };
+          valueDiv.appendChild(btn);
+        }
+        block.appendChild(valueDiv);
+        container.appendChild(block);
+      });
     }
-    document.querySelectorAll("input, select").forEach(el => {
-      el.addEventListener("input", updateAllPreviews);
-    });
+    
+    // Copy function for command previews
+    function copyText(elementId, btn) {
+      const el = document.getElementById(elementId);
+      const text = el.innerText || el.textContent;
+      navigator.clipboard.writeText(text)
+        .then(() => { animateCopyButton(btn, copyIconHTML); })
+        .catch(err => { console.error("Error copying text:", err); });
+    }
     
     /* ---------------------------
        Package Download Function
@@ -516,27 +606,19 @@ Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
       // Fetch the static Install.ps1 file from the root
       const installPromise = fetch("/Install.ps1")
         .then(response => {
-          if (!response.ok) {
-            throw new Error("Install.ps1 file not found");
-          }
+          if (!response.ok) { throw new Error("Install.ps1 file not found"); }
           return response.text();
         })
-        .then(text => {
-          zip.file("Install.ps1", text);
-        });
+        .then(text => { zip.file("Install.ps1", text); });
       promises.push(installPromise);
     
       // Fetch the static Uninstall.ps1 file from the root
       const uninstallPromise = fetch("/Uninstall.ps1")
         .then(response => {
-          if (!response.ok) {
-            throw new Error("Uninstall.ps1 file not found");
-          }
+          if (!response.ok) { throw new Error("Uninstall.ps1 file not found"); }
           return response.text();
         })
-        .then(text => {
-          zip.file("Uninstall.ps1", text);
-        });
+        .then(text => { zip.file("Uninstall.ps1", text); });
       promises.push(uninstallPromise);
     
       // If a driver ZIP file is selected, fetch it from the root directory
@@ -544,18 +626,13 @@ Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
       if (driverZipFileName) {
         const driverPromise = fetch(`/${driverZipFileName}`)
           .then(response => {
-            if (!response.ok) {
-              throw new Error("Driver ZIP file not found");
-            }
+            if (!response.ok) { throw new Error("Driver ZIP file not found"); }
             return response.arrayBuffer();
           })
-          .then(data => {
-            zip.file(driverZipFileName, data);
-          });
+          .then(data => { zip.file(driverZipFileName, data); });
         promises.push(driverPromise);
       }
     
-      // Once all files are fetched, generate the ZIP and trigger the download
       Promise.all(promises)
         .then(() => zip.generateAsync({ type: "blob" }))
         .then(content => {
@@ -564,9 +641,7 @@ Value: <strong style="color:#bb86fc;">${printerName}</strong>`;
           link.download = "PrinterDeploymentPackage.zip";
           link.click();
         })
-        .catch(error => {
-          console.error("Error generating package:", error);
-        });
+        .catch(error => { console.error("Error generating package:", error); });
     }
   </script>
   

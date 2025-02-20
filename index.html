@@ -550,8 +550,8 @@
       container.innerHTML = "";
       
       const detectionFields = [
-        { label: "Registry Key Path:", value: `HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\${printerName}`, copy: true },
-        { label: "Value name:", value: "Name", copy: false },
+        { label: "Registry Key Path:", value: `HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\${printerName}`, copy: true, purple: true },
+        { label: "Value name:", value: "Name", copy: false, purple: true },
         { label: "Detection method:", value: "String comparison", copy: false, purple: true },
         { label: "Operator:", value: "Equals", copy: false, purple: true },
         { label: "Value:", value: printerName, copy: true }

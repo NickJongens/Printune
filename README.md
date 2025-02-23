@@ -67,7 +67,7 @@ After filling in all required fields, click the **"Download Package"** button to
 Once you have generated the `PrinterDeploymentPackage.zip` file, you will need to extract and repackage it for deployment using the official **IntuneWinAppUtil**.
 
 ### Steps to Prepare for Deployment:
-1. Extract the contents of `PrinterDeploymentPackage.zip` to a folder. e.g. `C:\Temp`
+1. Extract the contents of `<PrinteName>.zip` to a folder. e.g. `C:\Temp`
 2. Download and install the [Microsoft Win32 Content Prep Tool (IntuneWinAppUtil)](https://learn.microsoft.com/en-us/mem/intune/apps/apps-win32-app-management).
 3. Run `IntuneWinAppUtil.exe` and follow the prompts:
    - **Source folder**: The extracted package folder.

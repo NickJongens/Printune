@@ -1,0 +1,40 @@
+{
+    "Brother HL Series": {
+      "driverZip": "Brother_HL_Series.zip",
+      "driverInf": "BROHL17A.INF",
+      "models": [
+        "Brother HL-2290",
+        "Brother HL-2295D",
+        "Brother HL-L2590DN",
+        "Brother HL-L2595DW",
+        "Brother HL-B2000D",
+        "Brother HL-B2050DN",
+        "Brother HL-B2080DW",
+        "Brother HL-L2310D",
+        "Brother HL-L2325DW",
+        "Brother HL-L2330D",
+        "Brother HL-L2335D",
+        "Brother HL-L2350DW",
+        "Brother HL-L2357DW",
+        "Brother HL-L2370DN",
+        "Brother HL-L2370DW",
+        "Brother HL-L2375DW",
+        "Brother HL-L2379DW",
+        "Brother HL-L2385DW"
+      ]
+    },
+    "Brother TD Series": {
+      "driverZip": "Brother_TD_Series.zip",
+      "driverInf": "BST18AV.INF",
+      "models": [
+        "Brother TD-4410D",
+        "Brother TD-4420DN",
+        "Brother TD-4510D",
+        "Brother TD-4520DN",
+        "Brother TD-4550DNWB",
+        "Brother TD-4210D"
+      ]
+    },
+    "Manual": {}
+  }
+  

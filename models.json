@@ -55,5 +55,21 @@
       "FF K505p for ApeosPort C7070 PCL 6"
     ]
   },
+  "HP LaserJet Pro M304/M305/M404/M405 Series": {
+    "driverZip": "HP_LaserJet_Pro_M304-M305-M404-M405.zip",
+    "driverInf": "hpmoC12A4_x64.inf",
+    "models": [
+      "HP LaserJet Pro M404-M405 PCL-6 (V4)",
+      "HP LaserJet Pro M304-M305 PCL-6 (V4)"
+    ]
+  },
+  "HP Color LaserJet Pro M478f/M479 Series": {
+    "driverZip": "HP_LaserJet_Pro_M478f-M479.zip",
+    "driverInf": "hpclC62A4_x64.inf",
+    "models": [
+      "HP Color LaserJet Pro M479 PCL-6 (V4)",
+      "HP Color LaserJet Pro M478f-9f PCL-6 (V4)"
+    ]
+  },
   "Manual": {}
 }

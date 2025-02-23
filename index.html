@@ -21,7 +21,7 @@
       text-align: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.5);
       position: relative;
-      left: 25%;  /* Center horizontally on larger screens */
+      left: 25%;
       max-width: 50%;
       border-radius: 2px;
     }
@@ -68,7 +68,6 @@
       display: none;
     }
     
-
     /* Section Styling */
     .section {
       margin-bottom: 1.5rem;
@@ -97,7 +96,7 @@
       background: #333;
       color: #e0e0e0;
     }
-
+    
     /* About Section Styling */
     #About {
       padding: 1rem;
@@ -260,6 +259,17 @@
           
           <label for="printerName">Printer Name:</label>
           <input type="text" id="printerName" placeholder="Upstairs Printer" oninput="updateAllPreviews()">
+
+          <!-- New: Brand & Model Dropdowns -->
+          <label for="brandSelect">Printer Brand:</label>
+          <select id="brandSelect" onchange="onBrandChange()">
+            <option value="">--Select Brand--</option>
+          </select>
+          
+          <label for="modelSelect">Printer Model:</label>
+          <select id="modelSelect" onchange="onModelChange()">
+            <option value="">--Select Model--</option>
+          </select>
           
           <button class="nav" type="button" onclick="nextSection('section1', 'section2')">Next</button>
         </div>
@@ -360,8 +370,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   
   <script>
-
-    // Global icon variables for copy/tick buttons
     // Global icon variables for copy/tick buttons
     const copyIconHTML = `<svg width="16" height="16" viewBox="0 0 24 24">
       <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
@@ -376,6 +384,7 @@
         btn.innerHTML = originalIconHTML;
       }, 1000);
     }
+    
     /* ---------------------------
        Dynamic Driver List
        --------------------------- */
@@ -395,7 +404,68 @@
           console.error("Error fetching driver list:", error);
         });
     }
-    document.addEventListener("DOMContentLoaded", populateDriverDatalist);
+    
+    /* ---------------------------
+       Models Dropdown Population
+       --------------------------- */
+    let modelsData = {};
+
+    function populateBrandDropdown() {
+      fetch('/models.json')
+        .then(response => response.json())
+        .then(data => {
+          modelsData = data;
+          const brandSelect = document.getElementById("brandSelect");
+          brandSelect.innerHTML = '<option value="">--Select Brand--</option>';
+          for (let brand in data) {
+            const option = document.createElement("option");
+            option.value = brand;
+            option.textContent = brand;
+            brandSelect.appendChild(option);
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching models.json:", error);
+        });
+    }
+
+    function onBrandChange() {
+      const brand = document.getElementById("brandSelect").value;
+      const modelSelect = document.getElementById("modelSelect");
+      modelSelect.innerHTML = '<option value="">--Select Model--</option>';
+      
+      if (brand === "Manual" || !brand) {
+        // For manual, provide a single option.
+        const manualOption = document.createElement("option");
+        manualOption.value = "Manual";
+        manualOption.textContent = "Manual";
+        modelSelect.appendChild(manualOption);
+        return;
+      }
+      // Populate model dropdown for selected brand
+      if (modelsData[brand] && modelsData[brand].models) {
+        modelsData[brand].models.forEach(model => {
+          const option = document.createElement("option");
+          option.value = model;
+          option.textContent = model;
+          modelSelect.appendChild(option);
+        });
+      }
+    }
+
+    function onModelChange() {
+      const brand = document.getElementById("brandSelect").value;
+      const model = document.getElementById("modelSelect").value;
+      if (!brand || brand === "Manual" || !model) return;
+      const mapping = modelsData[brand];
+      if(mapping) {
+         // Auto-populate driver details based on the mapping
+         document.getElementById("driverZipFile").value = mapping.driverZip || "";
+         document.getElementById("driverModelFile").value = mapping.driverInf || "";
+         document.getElementById("driverModelNameText").value = model;
+         updateAllPreviews();
+      }
+    }
     
     /* ---------------------------
        Tab & Section Navigation
@@ -486,9 +556,7 @@
       const ipAddress = (document.getElementById("ipAddress")?.value || "").trim();
       const portName = (document.getElementById("portName")?.value || "").trim();
       const printerName = (document.getElementById("printerName")?.value || "").trim();
-      // Use uploaded file name if available, otherwise use manual input.
       let driverModelFile = document.infUploadedFileName ? document.infUploadedFileName : (document.getElementById("driverModelFile")?.value || "").trim();
-      // For driver model name, prefer select value if available.
       let driverModelName = (document.getElementById("driverModelNameSelect")?.value || "").trim() || (document.getElementById("driverModelNameText")?.value || "").trim();
       const driverZipFile = (document.getElementById("driverZipFile")?.value || "").trim();
       const configFilePath = (document.getElementById("configFilePath")?.value || "").trim();
@@ -643,6 +711,12 @@
         })
         .catch(error => { console.error("Error generating package:", error); });
     }
+    
+    // Initialize the dynamic lists on DOMContentLoaded
+    document.addEventListener("DOMContentLoaded", function() {
+      populateDriverDatalist();
+      populateBrandDropdown();
+    });
   </script>
   
 </body>

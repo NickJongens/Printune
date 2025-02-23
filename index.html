@@ -354,7 +354,7 @@
     <!-- About Tab -->
     <div id="About" class="tabcontent">
       <h2>About Printune</h2>
-      <p style="text-align: center">Printune was born out of countless frustrating experiences discovering inconsistent printer deployments via Intune. </p>
+      <p style="text-align: center">Printune was born out of countless frustrating experiences discovering inconsistent printer deployments via Intune.</p>
       <p style="text-align: center">Tired of imprecise configurations and the challenges of manual setups, I created a toolkit that makes deploying printers faster and more consistent for all levels of skill.</p>
       <p style="text-align: center">This streamlined interface and smart automation simplifies every step – from specifying printer details to organising deployment scripts.</p>
       <p style="text-align: center"><a href="https://github.com/NickJongens/Printune" target="_blank">GitHub repository</a></p>
@@ -706,7 +706,10 @@
         .then(content => {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(content);
-          link.download = "PrinterDeploymentPackage.zip";
+          // Get printer name from input, sanitize filename, and use it for download.
+          let printerName = document.getElementById("printerName").value.trim();
+          printerName = printerName.replace(/[<>:"/\\|?*]+/g, "_") || "PrinterDeploymentPackage";
+          link.download = `${printerName}.zip`;
           link.click();
         })
         .catch(error => { console.error("Error generating package:", error); });

@@ -71,5 +71,12 @@
       "HP Color LaserJet Pro M478f-9f PCL-6 (V4)"
     ]
   },
+  "Canon": {
+    "driverZip": "Canon_Generic.zip",
+    "driverInf": "CNP60MA64.INF",
+    "models": [
+      "Canon Generic Plus PCL6"
+    ]
+  },
   "Manual": {}
 }

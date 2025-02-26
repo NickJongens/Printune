@@ -774,7 +774,7 @@
         formData.append("zipFile", zipContent, `${printerName}.zip`);
         formData.append("setupFileName", "Install.ps1");
 
-        const response = await fetch("https://intunewinapp.jongens.nz/api/Package", {
+        const response = await fetch("https://wintune.jongens.nz/api/Package", {
           method: "POST",
           body: formData
         });

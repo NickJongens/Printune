@@ -123,7 +123,7 @@
       text-decoration: underline;
     }
     
-    /* New: Driver Details Horizontal Layout */
+    /* Driver Details Horizontal Layout */
     .driver-details-container {
       display: flex;
       gap: 1rem;
@@ -153,6 +153,14 @@
     }
     button.nav:hover {
       background: #9b6bfc;
+    }
+    
+    /* Intune Download Button Styling */
+    button.nav.intune-download-btn {
+      background: #0078D4 !important;
+    }
+    button.nav.intune-download-btn:hover {
+      background: #006cbd !important;
     }
     
     /* Command Preview Container */
@@ -209,6 +217,26 @@
       margin-bottom: 1rem;
     }
     
+    /* Spinner Styling */
+    .spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid #bb86fc;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.75s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+    .azure-spinner {
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
     /* Footer Styling */
     footer {
       text-align: center;
@@ -229,6 +257,9 @@
         max-width: 90%;
       }
       .driver-details-container {
+        flex-direction: column;
+      }
+      .nav-group {
         flex-direction: column;
       }
     }
@@ -260,7 +291,7 @@
           <label for="printerName">Printer Name:</label>
           <input type="text" id="printerName" placeholder="Upstairs Printer" oninput="updateAllPreviews()">
 
-          <!-- New: Brand & Model Dropdowns -->
+          <!-- Brand & Model Dropdowns -->
           <label for="brandSelect">Printer Brand:</label>
           <select id="brandSelect" onchange="onBrandChange()">
             <option value="">--Select Brand--</option>
@@ -274,7 +305,7 @@
           <button class="nav" type="button" onclick="nextSection('section1', 'section2')">Next</button>
         </div>
         
-        <!-- Section 2: Driver Details (Redesigned) -->
+        <!-- Section 2: Driver Details -->
         <div class="section" id="section2" style="display: none;">
           <h2>Driver Details</h2>
           <!-- First Row: Driver File -->
@@ -308,21 +339,23 @@
           </div>
         </div>
         
-        <!-- Section 3: Driver & Config Settings (Final Page) -->
+        <!-- Section 3: Driver & Config Settings -->
         <div class="section" id="section3" style="display: none;">
-          <h2>Driver &amp; Config Settings</h2>
+          <h2>Driver & Config Settings</h2>
           <label for="driverZipFile">Printer Driver ZIP File Name (Required):</label>
-          <!-- The datalist will be populated dynamically from /drivers.json -->
           <input type="text" id="driverZipFile" list="driverZipOptions" placeholder="Select driver ZIP" oninput="updateAllPreviews()">
           <datalist id="driverZipOptions"></datalist>
           
           <label for="configFilePath">Config File Path (Optional):</label>
           <input type="text" id="configFilePath" placeholder="config.dat" oninput="updateAllPreviews()">
           
-          <!-- Navigation Group: Previous & Download Package -->
+          <!-- Navigation Group -->
           <div class="nav-group">
-            <button class="nav" type="button" onclick="previousSection('section3', 'section2')">Previous</button>
             <button class="nav" type="button" onclick="downloadPackage()">Download Package</button>
+            <button class="nav intune-download-btn" type="button" onclick="downloadIntuneWin()">
+              <span class="btn-content">Download IntuneWin</span>
+            </button>
+            <button class="nav" type="button" onclick="previousSection('section3', 'section2')">Previous</button>
           </div>
           
           <h2>Install Command</h2>
@@ -435,14 +468,12 @@
       modelSelect.innerHTML = '<option value="">--Select Model--</option>';
       
       if (brand === "Manual" || !brand) {
-        // For manual, provide a single option.
         const manualOption = document.createElement("option");
         manualOption.value = "Manual";
         manualOption.textContent = "Manual";
         modelSelect.appendChild(manualOption);
         return;
       }
-      // Populate model dropdown for selected brand
       if (modelsData[brand] && modelsData[brand].models) {
         modelsData[brand].models.forEach(model => {
           const option = document.createElement("option");
@@ -459,7 +490,6 @@
       if (!brand || brand === "Manual" || !model) return;
       const mapping = modelsData[brand];
       if(mapping) {
-         // Auto-populate driver details based on the mapping
          document.getElementById("driverZipFile").value = mapping.driverZip || "";
          document.getElementById("driverModelFile").value = mapping.driverInf || "";
          document.getElementById("driverModelNameText").value = model;
@@ -665,54 +695,104 @@
     }
     
     /* ---------------------------
-       Package Download Function
+       Package Download Functions
        --------------------------- */
-    function downloadPackage() {
+    async function generateZipPackage() {
       const zip = new JSZip();
       const promises = [];
-    
-      // Fetch the static Install.ps1 file from the root
+
+      // Add Install.ps1
       const installPromise = fetch("/Install.ps1")
-        .then(response => {
-          if (!response.ok) { throw new Error("Install.ps1 file not found"); }
-          return response.text();
-        })
-        .then(text => { zip.file("Install.ps1", text); });
+        .then(response => response.text())
+        .then(text => zip.file("Install.ps1", text));
       promises.push(installPromise);
-    
-      // Fetch the static Uninstall.ps1 file from the root
+
+      // Add Uninstall.ps1
       const uninstallPromise = fetch("/Uninstall.ps1")
-        .then(response => {
-          if (!response.ok) { throw new Error("Uninstall.ps1 file not found"); }
-          return response.text();
-        })
-        .then(text => { zip.file("Uninstall.ps1", text); });
+        .then(response => response.text())
+        .then(text => zip.file("Uninstall.ps1", text));
       promises.push(uninstallPromise);
-    
-      // If a driver ZIP file is selected, fetch it from the root directory
+
+      // Add driver ZIP if specified
       const driverZipFileName = (document.getElementById("driverZipFile")?.value || "").trim();
       if (driverZipFileName) {
         const driverPromise = fetch(`/${driverZipFileName}`)
-          .then(response => {
-            if (!response.ok) { throw new Error("Driver ZIP file not found"); }
-            return response.arrayBuffer();
-          })
-          .then(data => { zip.file(driverZipFileName, data); });
+          .then(response => response.arrayBuffer())
+          .then(data => zip.file(driverZipFileName, data));
         promises.push(driverPromise);
       }
-    
-      Promise.all(promises)
-        .then(() => zip.generateAsync({ type: "blob" }))
-        .then(content => {
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(content);
-          // Get printer name from input, sanitize filename, and use it for download.
-          let printerName = document.getElementById("printerName").value.trim();
-          printerName = printerName.replace(/[<>:"/\\|?*]+/g, "_") || "PrinterDeploymentPackage";
-          link.download = `${printerName}.zip`;
-          link.click();
-        })
-        .catch(error => { console.error("Error generating package:", error); });
+
+      await Promise.all(promises);
+      return zip.generateAsync({ type: "blob" });
+    }
+
+    function sanitizeFileName(name) {
+      return name.replace(/[<>:"/\\|?*]+/g, "_") || "PrinterDeployment";
+    }
+
+    function triggerDownload(blob, mimeType, fileName) {
+      const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
+
+    async function downloadPackage() {
+      const btn = document.querySelector('#section3 button[onclick="downloadPackage()"]');
+      const originalContent = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div> Processing...';
+      btn.disabled = true;
+
+      try {
+        const zipContent = await generateZipPackage();
+        const printerName = sanitizeFileName(document.getElementById("printerName").value.trim());
+        triggerDownload(zipContent, "application/zip", `${printerName}.zip`);
+      } catch (error) {
+        console.error("Package generation error:", error);
+        alert(`Error generating package: ${error.message}`);
+      } finally {
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+      }
+    }
+
+    async function downloadIntuneWin() {
+      const btn = document.querySelector('.intune-download-btn');
+      const originalContent = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner azure-spinner"></div> Processing...';
+      btn.disabled = true;
+
+      try {
+        const zipContent = await generateZipPackage();
+        const printerName = sanitizeFileName(document.getElementById("printerName").value.trim());
+        
+        const formData = new FormData();
+        formData.append("zipFile", zipContent, `${printerName}.zip`);
+        formData.append("setupFileName", "Install.ps1");
+
+        const response = await fetch("https://intunewinapp.jongens.nz/api/Package", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorText}`);
+        }
+
+        const intuneBlob = await response.blob();
+        triggerDownload(intuneBlob, "application/intunewin", `${printerName}.intunewin`);
+      } catch (error) {
+        console.error("Intune packaging error:", error);
+        alert(`IntuneWin creation failed: ${error.message}`);
+      } finally {
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+      }
     }
     
     // Initialize the dynamic lists on DOMContentLoaded
@@ -721,6 +801,5 @@
       populateBrandDropdown();
     });
   </script>
-  
 </body>
 </html>

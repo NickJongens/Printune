@@ -47,7 +47,7 @@ This final section requires additional deployment details:
 Enter the name of the ZIP file that contains the printer driver. This field is essential, and there are a few drivers pre-loaded that can automatically be added to the package. *If you'd like a driver added - please open an issue in the repo*
 
 ### Config File Path (Optional)
-Specify the path to a configuration file if applicable (for example, `"config.dat"`). These can contain Paper size, Duplex/Colour settings and can be exported from a pre-configured printer using the **config.dat** export [Command.](https://github.com/NickJongens/Printune/config.md)
+Specify the path to a configuration file if applicable (for example, `"config.dat"`). These can contain Paper size, Duplex/Colour settings and can be exported from a pre-configured printer using the **config.dat** export [Command.](https://github.com/NickJongens/Printune/blob/main/config.md)
 
 ### Command Previews
 Based on your entries, the app generates commands for both installing and uninstalling the printer. These commands are shown with syntax highlighting. Use the provided copy buttons to easily copy the commands and add these to your Intune Win32 App.

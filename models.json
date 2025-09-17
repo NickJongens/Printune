@@ -1,4 +1,4 @@
-{
+{ 
   "Brother HL Series": {
     "driverZip": "Brother_HL_Series.zip",
     "driverInf": "BROHL17A.INF",
@@ -76,6 +76,13 @@
     "driverInf": "CNP60MA64.INF",
     "models": [
       "Canon Generic Plus PCL6"
+    ]
+  },
+  "Ricoh": {
+    "driverZip": "RICOH_MP_Series.zip",
+    "driverInf": "MPC4504_.inf",
+    "models": [
+      "RICOH MP C4505 PCL 6"
     ]
   },
   "Manual": {}

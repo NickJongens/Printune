@@ -7,262 +7,291 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
   <style>
     /* Reset & Basic Styling */
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      background: #121212;
-      color: #e0e0e0;
-    }
-    header {
-      background: #bb86fc;
-      color: white;
-      padding: 0.5rem;
-      margin-top: 1.5rem;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-      position: relative;
-      left: 25%;
-      max-width: 50%;
-      border-radius: 8px;
-    }
-    h1 {
-      margin: 0;
-      font-weight: 500;
-    }
-    .container {
-      max-width: 50%;
-      margin: 2rem auto;
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.7);
-    }
-    
-    /* Tabs Styling */
-    .tab {
-      display: flex;
-      border-bottom: 2px solid #444;
-      margin-bottom: 1.5rem;
-    }
-    .tab button {
-      flex: 1;
-      background: #2e2e2e;
-      border: none;
-      outline: none;
-      padding: 1rem;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s;
-      color: #e0e0e0;
-      border-radius: 2px;
-    }
-    .tab button:hover {
-      background: #3e3e3e;
-    }
-    .tab button.active {
-      background: #bb86fc;
-      color: white;
-      font-weight: 500;
-    }
-    .tabcontent {
-      display: none;
-    }
-    
-    /* Section Styling */
-    .section {
-      margin-bottom: 1.5rem;
-      padding: 1rem;
-      border: 1px solid #444;
-      border-radius: 6px;
-      background: #2e2e2e;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    .section h2 {
-      margin-top: 0;
-      color: #bb86fc;
-    }
-    label {
-      display: block;
-      margin-top: 0.75rem;
-      font-weight: 400;
-    }
-    input[type="text"], select, input[type="file"] {
-      width: 97.5%;
-      padding: 0.6rem;
-      margin-top: 0.3rem;
-      border: 1px solid #555;
-      border-radius: 4px;
-      font-size: 14px;
-      background: #333;
-      color: #e0e0e0;
-    }
-    
-    /* About Section Styling */
-    #About {
-      padding: 1rem;
-      background: linear-gradient(135deg, #2e2e2e, #1e1e1e);
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    #About h2 {
-      color: #bb86fc;
-      text-align: center;
-      font-size: 24px;
-      margin-bottom: 1rem;
-    }
-    #About p {
-      font-size: 16px;
-      line-height: 1.5;
-      margin-bottom: 0.8rem;
-    }
-    #About a {
-      color: #bb86fc;
-      text-decoration: none;
-    }
-    #About a:hover {
-      text-decoration: underline;
-    }
-    
-    /* Driver Details Horizontal Layout */
-    .driver-details-container {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .driver-details-column {
-      flex: 1;
-      min-width: 200px;
-    }
-    .driver-details-column h3 {
-      margin: 0.5rem 0 0.3rem;
-      font-size: 16px;
-      color: #bb86fc;
-    }
-    
-    /* Navigation Button Styling */
-    button.nav {
-      margin-top: 1rem;
-      padding: 0.6rem 1.2rem;
-      background: #bb86fc;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.3s;
-    }
-    button.nav:hover {
-      background: #9b6bfc;
-    }
-    
-    /* Intune Download Button Styling */
-    button.nav.intune-download-btn {
-      background: #0078D4 !important;
-    }
-    button.nav.intune-download-btn:hover {
-      background: #006cbd !important;
-    }
-    
-    /* Command Preview Container */
-    .preview-container {
-      display: flex;
-      align-items: center;
-      background: #333;
-      padding: 0.5rem;
-      border: 1px solid #555;
-      border-radius: 4px;
-      margin-bottom: 1rem;
-    }
-    .preview-text {
-      flex-grow: 1;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-size: 14px;
-      color: #e0e0e0;
-    }
-    .copy-btn {
-      margin-left: 0.5rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.2rem;
-    }
-    .copy-btn svg {
-      vertical-align: middle;
-      fill: #BB86FC;
-    }
-    
-    /* Detection Registry Instructions */
-    .detection-block {
-      margin-bottom: 1rem;
-    }
-    .detection-label {
-      font-weight: bold;
-      margin-bottom: 0.2rem;
-    }
-    .detection-value {
-      margin-left: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .detection-purple {
-      color: #bb86fc;
-    }
-    
-    /* Navigation Group for Section 3 */
-    .nav-group {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    /* Spinner Styling */
-    .spinner {
-      display: inline-block;
-      width: 1rem;
-      height: 1rem;
-      border: 2px solid #bb86fc;
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: spin 0.75s linear infinite;
-      vertical-align: middle;
-      margin-right: 0.5rem;
-    }
-    .azure-spinner {
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Footer Styling */
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      padding: 1rem;
-      font-size: 12px;
-      color: #aaa;
-    }
-    
-    /* Responsive styling for mobile devices */
-    @media (max-width: 600px) {
-      .container {
-        max-width: 90%;
-        padding: 1rem;
-      }
-      header {
-        left: 5%;
-        max-width: 90%;
-      }
-      .driver-details-container {
-        flex-direction: column;
-      }
-      .nav-group {
-        flex-direction: column;
-      }
-    }
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background: #121212;
+  color: #e0e0e0;
+}
+
+/* Header - Minimal Floating Title (updated) */
+header {
+  background: none;            /* remove bulky purple box */
+  color: inherit;
+  padding: 0;
+  margin-top: 2rem;
+  text-align: center;
+  position: relative;
+  left: 0;
+  max-width: 100%;
+}
+
+/* Gradient clipped title with soft glow */
+h1 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 2.2rem;
+  display: inline-block;
+  line-height: 1;
+  background: linear-gradient(90deg, #bb86fc, #9b6bfc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 6px 24px rgba(155, 107, 252, 0.12); /* subtle halo */
+  padding: 0.1rem 0; /* tiny vertical breathing room */
+}
+
+/* Container (kept from base, slightly tightened for visual balance) */
+.container {
+  max-width: 50%;
+  margin: 2rem auto;
+  background: #1e1e1e;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+}
+
+/* Tabs Styling */
+.tab {
+  display: flex;
+  border-bottom: 2px solid #444;
+  margin-bottom: 1.5rem;
+}
+.tab button {
+  flex: 1;
+  background: #2e2e2e;
+  border: none;
+  outline: none;
+  padding: 1rem;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.22s cubic-bezier(.2,.9,.2,1), color 0.22s;
+  color: #e0e0e0;
+  border-radius: 4px 4px 0 0;
+  margin-right: 0.5rem;
+}
+.tab button:last-child { margin-right: 0; }
+.tab button:hover {
+  background: #3e3e3e;
+}
+.tab button.active {
+  background: #bb86fc;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 6px 18px rgba(187,134,252,0.12);
+}
+.tabcontent {
+  display: none;
+}
+
+/* Section Styling */
+.section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #2e2e2e;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.section h2 {
+  margin-top: 0;
+  color: #bb86fc;
+}
+label {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 400;
+}
+input[type="text"], select, input[type="file"] {
+  width: 97.5%;
+  padding: 0.6rem;
+  margin-top: 0.3rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #333;
+  color: #e0e0e0;
+}
+
+/* About Section Styling */
+#About {
+  padding: 1rem;
+  background: linear-gradient(135deg, #2e2e2e, #1e1e1e);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+#About h2 {
+  color: #bb86fc;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 1rem;
+}
+#About p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 0.8rem;
+}
+#About a {
+  color: #bb86fc;
+  text-decoration: none;
+}
+#About a:hover {
+  text-decoration: underline;
+}
+
+/* Driver Details Horizontal Layout */
+.driver-details-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.driver-details-column {
+  flex: 1;
+  min-width: 200px;
+}
+.driver-details-column h3 {
+  margin: 0.5rem 0 0.3rem;
+  font-size: 16px;
+  color: #bb86fc;
+}
+
+/* Navigation Button Styling (kept but modernised slightly) */
+button.nav {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(180deg,#bb86fc,#a36ef6);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 4px 10px rgba(155,107,252,0.08);
+}
+button.nav:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(155,107,252,0.12);
+}
+
+/* Intune Download Button Styling (left intact but with softer corners) */
+button.nav.intune-download-btn {
+  background: #0078D4 !important;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,120,212,0.08);
+}
+button.nav.intune-download-btn:hover {
+  background: #006cbd !important;
+  transform: translateY(-2px);
+}
+
+/* Command Preview Container */
+.preview-container {
+  display: flex;
+  align-items: center;
+  background: #333;
+  padding: 0.5rem;
+  border: 1px solid #555;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.preview-text {
+  flex-grow: 1;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 14px;
+  color: #e0e0e0;
+  padding: 0.25rem 0;
+}
+.copy-btn {
+  margin-left: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+.copy-btn svg {
+  vertical-align: middle;
+  fill: #BB86FC;
+}
+
+/* Detection Registry Instructions */
+.detection-block {
+  margin-bottom: 1rem;
+}
+.detection-label {
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+.detection-value {
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.detection-purple {
+  color: #bb86fc;
+}
+
+/* Navigation Group for Section 3 */
+.nav-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Spinner Styling */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #bb86fc;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.75s linear infinite;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+.azure-spinner {
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Footer Styling */
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* Responsive styling for mobile devices */
+@media (max-width: 600px) {
+  .container {
+    max-width: 90%;
+    padding: 1rem;
+  }
+  header {
+    margin-top: 1.25rem;
+  }
+  h1 {
+    font-size: 1.6rem;
+  }
+  .driver-details-container {
+    flex-direction: column;
+  }
+  .nav-group {
+    flex-direction: column;
+  }
+  .tab button {
+    padding: 0.8rem;
+    font-size: 15px;
+  }
+}
+
   </style>
 </head>
 <body>

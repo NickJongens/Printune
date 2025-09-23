@@ -741,7 +741,7 @@ footer {
             <div class="section3-column config-export-column">
               <h2>Config Export Command</h2>
               <label for="configExportFileName" style="margin-bottom: 0.5rem; font-size: 14px; font-weight: 500;">Config File Name:</label>
-              <input type="text" id="configExportFileName" placeholder="config.dat" value="config.dat" oninput="updateAllPreviews()">
+              <input type="text" id="configExportFileName" placeholder="config.dat" value="" oninput="updateAllPreviews()">
               <div class="preview-container">
                 <div id="configExportPreview" class="preview-text"></div>
                 <button class="copy-btn" onclick="copyConfigExportCommand(this)">
@@ -1008,6 +1008,7 @@ footer {
       let driverModelName = (document.getElementById("driverModelNameSelect")?.value || "").trim() || (document.getElementById("driverModelNameText")?.value || "").trim();
       const driverZipFile = (document.getElementById("driverZipFile")?.value || "").trim();
       const configFilePath = (document.getElementById("configFilePath")?.value || "").trim();
+      const configExportFileName = (document.getElementById("configExportFileName")?.value || "").trim();
       const highlightColor = getHighlightColor();
       
       let command = `powershell.exe -ExecutionPolicy Bypass -File Install.ps1 `;
@@ -1015,9 +1016,14 @@ footer {
       if (portName) command += `-PrinterPortName "<strong style='color:${highlightColor};'>${portName}</strong>" `;
       if (printerName) command += `-PrinterName "<strong style='color:${highlightColor};'>${printerName}</strong>" `;
       if (driverModelName) command += `-PrinterDriverModelName "<strong style='color:${highlightColor};'>${driverModelName}</strong>" `;
-      if (driverZipFile) command += `-PrinterDriverZipFileName "<strong style='color:${highlightColor};'>${driverZipFile}</strong>" `;
+      if (driverZipFile) {
+        // Remove Driver/ prefix from ZIP filename for the install command
+        const zipFileName = driverZipFile.split('/').pop();
+        command += `-PrinterDriverZipFileName "<strong style='color:${highlightColor};'>${zipFileName}</strong>" `;
+      }
       if (driverModelFile) command += `-PrinterDriverModelFileName "<strong style='color:${highlightColor};'>${driverModelFile}</strong>" `;
       if (configFilePath) command += `-ConfigFilePath "<strong style='color:${highlightColor};'>${configFilePath}</strong>" `;
+      if (configExportFileName) command += `-ConfigFilePath "<strong style='color:${highlightColor};'>${configExportFileName}</strong>" `;
       
       document.getElementById("installCommandPreview").innerHTML = command;
     }
@@ -1038,15 +1044,21 @@ footer {
       let driverModelName = (document.getElementById("driverModelNameSelect")?.value || "").trim() || (document.getElementById("driverModelNameText")?.value || "").trim();
       const driverZipFile = (document.getElementById("driverZipFile")?.value || "").trim();
       const configFilePath = (document.getElementById("configFilePath")?.value || "").trim();
+      const configExportFileName = (document.getElementById("configExportFileName")?.value || "").trim();
       
       let command = `powershell.exe -ExecutionPolicy Bypass -File Install.ps1 `;
       if (ipAddress) command += `-PrinterPortIPAddress "${ipAddress}" `;
       if (portName) command += `-PrinterPortName "${portName}" `;
       if (printerName) command += `-PrinterName "${printerName}" `;
       if (driverModelName) command += `-PrinterDriverModelName "${driverModelName}" `;
-      if (driverZipFile) command += `-PrinterDriverZipFileName "${driverZipFile}" `;
+      if (driverZipFile) {
+        // Remove Driver/ prefix from ZIP filename for the install command
+        const zipFileName = driverZipFile.split('/').pop();
+        command += `-PrinterDriverZipFileName "${zipFileName}" `;
+      }
       if (driverModelFile) command += `-PrinterDriverModelFileName "${driverModelFile}" `;
       if (configFilePath) command += `-ConfigFilePath "${configFilePath}" `;
+      if (configExportFileName) command += `-ConfigFilePath "${configExportFileName}" `;
       return command.trim();
     }
     function getPlainUninstallCommand() {

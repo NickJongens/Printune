@@ -378,6 +378,10 @@ footer {
           <label for="configFilePath">Config File Path (Optional):</label>
           <input type="text" id="configFilePath" placeholder="config.dat" oninput="updateAllPreviews()">
           
+          <label for="configExportFileName">Config File Name:</label>
+          <input type="text" id="configExportFileName" placeholder="config.dat" value="config.dat" oninput="updateAllPreviews()">
+          <p style="font-size: 12px; color: #aaa; margin: 0.3rem 0 0;">Run this command on the target machine to export the printer config. Place the exported config.dat in the root of the folder you package for Intune. <a href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/rundll32-printui" target="_blank" style="color: #bb86fc;">Microsoft docs</a></p>
+          
           <!-- Navigation Group -->
           <div class="nav-group">
             <button class="nav" type="button" onclick="downloadPackage()">Download Package</button>
@@ -398,6 +402,16 @@ footer {
           <div class="preview-container">
             <div id="uninstallCommandPreview" class="preview-text"></div>
             <button class="copy-btn" onclick="copyText('uninstallCommandPreview', this)">
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+              </svg>
+            </button>
+          </div>
+          
+          <h2>Config Export Command</h2>
+          <div class="preview-container">
+            <div id="configExportPreview" class="preview-text"></div>
+            <button class="copy-btn" onclick="copyConfigExportCommand(this)">
               <svg width="16" height="16" viewBox="0 0 24 24">
                 <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
               </svg>
@@ -663,9 +677,34 @@ footer {
       if (portName) command += `-PrinterPortName "${portName}" `;
       return command.trim();
     }
+    
+    // Generate plain-text config export command for copying
+    function getPlainConfigExportCommand() {
+      const printerName = (document.getElementById("printerName")?.value || "").trim();
+      const configExportFileName = (document.getElementById("configExportFileName")?.value || "config.dat").trim();
+      
+      // Sanitize printer name by removing double quotes to avoid breaking the command
+      const sanitizedPrinterName = printerName.replace(/"/g, '') || "<PrinterName>";
+      
+      return `rundll32 printui.dll,PrintUIEntry /Ss /n "${sanitizedPrinterName}" /a "${configExportFileName}"`;
+    }
+    
+    // Update the HTML-highlighted config export command preview
+    function updateConfigExportPreview() {
+      const printerName = (document.getElementById("printerName")?.value || "").trim();
+      const configExportFileName = (document.getElementById("configExportFileName")?.value || "config.dat").trim();
+      
+      // Sanitize printer name by removing double quotes to avoid breaking the command
+      const sanitizedPrinterName = printerName.replace(/"/g, '') || "<PrinterName>";
+      
+      let command = `rundll32 printui.dll,PrintUIEntry /Ss /n "<strong style='color:#bb86fc;'>${sanitizedPrinterName}</strong>" /a "<strong style='color:#bb86fc;'>${configExportFileName}</strong>"`;
+      
+      document.getElementById("configExportPreview").innerHTML = command;
+    }
     function updateAllPreviews() {
       updateInstallPreview();
       updateUninstallPreview();
+      updateConfigExportPreview();
       updateDetectionPreview();
     }
     function updateDetectionPreview() {
@@ -718,6 +757,14 @@ footer {
       navigator.clipboard.writeText(text)
         .then(() => { animateCopyButton(btn, copyIconHTML); })
         .catch(err => { console.error("Error copying text:", err); });
+    }
+    
+    // Copy function specifically for config export command (uses plain text version)
+    function copyConfigExportCommand(btn) {
+      const command = getPlainConfigExportCommand();
+      navigator.clipboard.writeText(command)
+        .then(() => { animateCopyButton(btn, copyIconHTML); })
+        .catch(err => { console.error("Error copying config export command:", err); });
     }
     
     /* ---------------------------

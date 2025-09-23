@@ -1170,10 +1170,19 @@ footer {
       // Add driver ZIP if specified
       const driverZipFileName = (document.getElementById("driverZipFile")?.value || "").trim();
       if (driverZipFileName) {
+        console.log(`Attempting to fetch driver ZIP: /${driverZipFileName}`);
         const driverPromise = fetch(`/${driverZipFileName}`)
-          .then(response => response.arrayBuffer())
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Failed to fetch driver ZIP: ${response.status} ${response.statusText}`);
+            }
+            console.log(`Successfully fetched driver ZIP: ${driverZipFileName}`);
+            return response.arrayBuffer();
+          })
           .then(data => zip.file(driverZipFileName, data));
         promises.push(driverPromise);
+      } else {
+        console.log("No driver ZIP file specified");
       }
 
       await Promise.all(promises);

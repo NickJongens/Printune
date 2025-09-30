@@ -71,6 +71,14 @@
       "HP Color LaserJet Pro M478f-9f PCL-6 (V4)"
     ]
   },
+  "HP": {
+    "driverZip": "Driver/HP_Generic.zip",
+    "driverInf": "hpcu340u.inf",
+    "models": [
+      "HP Universal Printing PCL 6 (v7.8.0)"
+    ]
+  },
+
   "Canon": {
     "driverZip": "Driver/Canon_Generic.zip",
     "driverInf": "CNP60MA64.INF",

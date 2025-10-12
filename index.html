@@ -793,6 +793,76 @@ input:checked + .toggle-slider:before {
   transform: translateX(26px);
 }
 
+/* Driver Request Modal Specific Styling */
+.request-info, .request-steps {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border-left: 4px solid var(--accent-color);
+}
+
+.request-info h4, .request-steps h4 {
+  margin: 0 0 0.75rem 0;
+  color: var(--accent-color);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.request-info ul, .request-steps ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.request-info li, .request-steps li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.request-actions {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.request-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.request-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.request-note {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 1rem;
+  font-style: italic;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+}
+
 /* Responsive styling for mobile devices */
 @media (max-width: 600px) {
   .container {
@@ -1021,6 +1091,17 @@ input:checked + .toggle-slider:before {
       <p style="text-align: center">This streamlined interface and smart automation simplifies every step – from specifying printer details to organising deployment scripts.</p>
       <p style="text-align: center"><a href="https://github.com/NickJongens/Printune" target="_blank">GitHub repository</a></p>
       
+      <!-- Driver Request Section -->
+      <div class="section" style="margin-top: 2rem;">
+        <h2>Request New Driver</h2>
+        <p style="margin-bottom: 1rem; color: var(--text-primary);">
+          Don't see your printer model? We can help you add it! Request a new driver to be included in Printune.
+        </p>
+        <button class="nav" onclick="showDriverRequestModal()" style="margin-top: 0.5rem;">
+          📝 Request Driver
+        </button>
+      </div>
+
       <!-- Data Collection Settings -->
       <div class="section" style="margin-top: 2rem;">
         <h2>Data Collection Settings</h2>
@@ -1074,6 +1155,56 @@ input:checked + .toggle-slider:before {
             </button>
           </div>
           <p class="consent-note">You can change this setting anytime in the About tab.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Driver Request Modal -->
+    <div id="driverRequestModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Request New Driver 📝</h3>
+          <button class="modal-close" onclick="closeDriverRequestModal()" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Help us expand Printune's driver database! To request a new printer driver, please provide the following information:</p>
+          
+          <div class="request-info">
+            <h4>Required Information:</h4>
+            <ul>
+              <li><strong>🔗 Driver Link:</strong> Download link to the PCL6 driver package</li>
+              <li><strong>📄 Driver INF File:</strong> The .inf file name from the driver package</li>
+              <li><strong>🏷️ Driver Model Name:</strong> Exact model name as it appears in the driver</li>
+              <li><strong>🖨️ Printer Brand & Model:</strong> Manufacturer and specific printer model</li>
+              <li><strong>📋 Additional Details:</strong> Any special requirements or notes</li>
+            </ul>
+          </div>
+
+          <div class="request-steps">
+            <h4>How to Find This Information:</h4>
+            <ol>
+              <li>Download the printer driver from the manufacturer's website</li>
+              <li>Extract the driver package and locate the .inf file</li>
+              <li>Open the .inf file in a text editor</li>
+              <li>Look for the model name in the [Manufacturer] or [Models] section</li>
+              <li>Copy the exact model name as it appears</li>
+            </ol>
+          </div>
+
+          <div class="request-actions">
+            <a href="https://n8n.jongens.nz/form/c8cdba04-e2fc-4ee7-9256-2dc45973d4c0" target="_blank" class="request-btn">
+              <span class="btn-icon">🚀</span>
+              Submit Driver Request
+            </a>
+            <button class="consent-btn decline" onclick="closeDriverRequestModal()">
+              <span class="btn-icon">❌</span>
+              Cancel
+            </button>
+          </div>
+          
+          <p class="request-note">
+            <strong>Note:</strong> Driver requests are typically processed within 1-2 business days. We'll notify you once your requested driver has been added to Printune!
+          </p>
         </div>
       </div>
     </div>
@@ -1780,21 +1911,43 @@ input:checked + .toggle-slider:before {
 
     // Close modal when clicking outside
     document.addEventListener('click', function(event) {
-      const modal = document.getElementById('consentModal');
-      if (event.target === modal) {
+      const consentModal = document.getElementById('consentModal');
+      const driverRequestModal = document.getElementById('driverRequestModal');
+      if (event.target === consentModal) {
         closeConsentModal();
+      } else if (event.target === driverRequestModal) {
+        closeDriverRequestModal();
       }
     });
 
     // Close modal with Escape key
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') {
-        const modal = document.getElementById('consentModal');
-        if (modal.style.display === 'flex') {
+        const consentModal = document.getElementById('consentModal');
+        const driverRequestModal = document.getElementById('driverRequestModal');
+        if (consentModal.style.display === 'flex') {
           closeConsentModal();
+        } else if (driverRequestModal.style.display === 'flex') {
+          closeDriverRequestModal();
         }
       }
     });
+
+    /* ---------------------------
+       Driver Request Functions
+       --------------------------- */
+    
+    // Show driver request modal
+    function showDriverRequestModal() {
+      document.getElementById('driverRequestModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    // Close driver request modal
+    function closeDriverRequestModal() {
+      document.getElementById('driverRequestModal').style.display = 'none';
+      document.body.style.overflow = ''; // Restore scrolling
+    }
   </script>
 </body>
 </html>

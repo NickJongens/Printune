@@ -1,6 +1,6 @@
 { 
   "Brother HL Series": {
-    "driverZip": "Driver/Brother_HL_Series.zip",
+    "driverZip": "Driver/BROTHER_HL.zip",
     "driverInf": "BROHL17A.INF",
     "models": [
       "Brother HL-2290",
@@ -24,7 +24,7 @@
     ]
   },
   "Brother TD Series": {
-    "driverZip": "Driver/Brother_TD_Series.zip",
+    "driverZip": "Driver/BROTHER_TD.zip",
     "driverInf": "BST18AV.INF",
     "models": [
       "Brother TD-4410D",
@@ -36,7 +36,7 @@
     ]
   },
   "Fuji Xerox PrimeLink C9000 Series": {
-    "driverZip": "Driver/Fuji_Xerox_PrimeLink_C9000_Series.zip",
+    "driverZip": "Driver/FUJI_XEROX_PRIMELINK_C9000.zip",
     "driverInf": "FF6PRAL.inf",
     "models": [
       "FF K549p for PrimeLink C9065 PCL 6",
@@ -44,7 +44,7 @@
     ]
   },
   "Fuji Xerox ApeosPort Series": {
-    "driverZip": "Driver/Fuji_Xerox_ApeosPort_Series.zip",
+    "driverZip": "Driver/FUJI_XEROX_APEOSPORT.zip",
     "driverInf": "FF6BSAL.inf",
     "models": [
       "FF K505p for ApeosPort C3070 PCL 6",
@@ -56,7 +56,7 @@
     ]
   },
   "HP LaserJet Pro M304/M305/M404/M405 Series": {
-    "driverZip": "Driver/HP_LaserJet_Pro_M304-M305-M404-M405.zip",
+    "driverZip": "Driver/HP_M304_M305_M404_M405.zip",
     "driverInf": "hpmoC12A4_x64.inf",
     "models": [
       "HP LaserJet Pro M404-M405 PCL-6 (V4)",
@@ -64,7 +64,7 @@
     ]
   },
   "HP Color LaserJet Pro M478f/M479 Series": {
-    "driverZip": "Driver/HP_LaserJet_Pro_M478f-M479.zip",
+    "driverZip": "Driver/HP_M478F_M479.zip",
     "driverInf": "hpclC62A4_x64.inf",
     "models": [
       "HP Color LaserJet Pro M479 PCL-6 (V4)",
@@ -72,7 +72,7 @@
     ]
   },
   "HP": {
-    "driverZip": "Driver/HP_Generic.zip",
+    "driverZip": "Driver/HP_GENERIC.zip",
     "driverInf": "hpcu340u.inf",
     "models": [
       "HP Universal Printing PCL 6 (v7.8.0)"
@@ -80,21 +80,21 @@
   },
 
   "Canon": {
-    "driverZip": "Driver/Canon_Generic.zip",
+    "driverZip": "Driver/CANON_GENERIC.zip",
     "driverInf": "CNP60MA64.INF",
     "models": [
       "Canon Generic Plus PCL6"
     ]
   },
   "Ricoh MP Series": {
-    "driverZip": "Driver/RICOH_MP_Series.zip",
+    "driverZip": "Driver/RICOH_MP.zip",
     "driverInf": "MPC4504_.inf",
     "models": [
       "RICOH MP C4504 PCL 6"
     ]
   },
   "Ricoh SP Series": {
-    "driverZip": "Driver/Ricoh_SP_3710DN.zip",
+    "driverZip": "Driver/RICOH_SP_3710DN.zip",
     "driverInf": "GXE6M.inf",
     "models": [
       "RICOH SP 3710DN PCL 6"

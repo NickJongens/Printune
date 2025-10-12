@@ -1939,8 +1939,15 @@ input:checked + .toggle-slider:before {
     
     // Show driver request modal
     function showDriverRequestModal() {
-      document.getElementById('driverRequestModal').style.display = 'flex';
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      console.log('showDriverRequestModal called'); // Debug log
+      const modal = document.getElementById('driverRequestModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        console.log('Driver request modal should now be visible'); // Debug log
+      } else {
+        console.error('Driver request modal not found!'); // Debug log
+      }
     }
 
     // Close driver request modal

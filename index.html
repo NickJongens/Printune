@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Intune Printer Deployment Toolkit</title>
+  <!-- Favicon using printer logo -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'%3E%3Cpath d='M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z'/%3E%3C/svg%3E">
   <!-- Google Font for better typography -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
   <style>
@@ -975,7 +977,7 @@ input:checked + .toggle-slider:before {
             <option value="">--Select Model--</option>
           </select>
           
-          <button class="nav" type="button" onclick="nextSection('section1', 'section2')">Next</button>
+          <button class="nav" type="button" onclick="navigateFromSection1()">Next</button>
         </div>
         
         <!-- Section 2: Driver Details -->
@@ -1003,6 +1005,19 @@ input:checked + .toggle-slider:before {
               <h3>Select Model from INF</h3>
               <select id="driverModelNameSelect" onchange="updateAllPreviews()">
                 <option value="">--Select Model--</option>
+              </select>
+            </div>
+          </div>
+          <!-- Third Row: Driver ZIP File -->
+          <div class="driver-details-container" style="margin-top: 1rem;">
+            <div class="driver-details-column">
+              <h3>Driver ZIP File (Manual)</h3>
+              <input type="text" id="driverZipFileText" placeholder="Driver/BROTHER_HL.zip" oninput="updateDriverZipFile()">
+            </div>
+            <div class="driver-details-column">
+              <h3>Select Driver ZIP</h3>
+              <select id="driverZipFileSelect" onchange="updateDriverZipFile()">
+                <option value="">--Select Driver ZIP--</option>
               </select>
             </div>
           </div>
@@ -1248,10 +1263,22 @@ input:checked + .toggle-slider:before {
         .then(data => {
           const datalist = document.getElementById("driverZipOptions");
           datalist.innerHTML = "";
+          const selectEl = document.getElementById("driverZipFileSelect");
+          if (selectEl) {
+            selectEl.innerHTML = '<option value="">--Select Driver ZIP--</option>';
+          }
           data.forEach(driver => {
             const option = document.createElement("option");
             option.value = driver;
             datalist.appendChild(option);
+            
+            // Also populate the dropdown
+            if (selectEl) {
+              const selectOption = document.createElement("option");
+              selectOption.value = driver;
+              selectOption.textContent = driver;
+              selectEl.appendChild(selectOption);
+            }
           });
         })
         .catch(error => {
@@ -1311,11 +1338,49 @@ input:checked + .toggle-slider:before {
       if (!brand || brand === "Manual" || !model) return;
       const mapping = modelsData[brand];
       if(mapping) {
-         document.getElementById("driverZipFile").value = mapping.driverZip || "";
+         const driverZip = mapping.driverZip || "";
+         // Update hidden field
+         document.getElementById("driverZipFile").value = driverZip;
+         // Update visible fields
+         const driverZipFileText = document.getElementById("driverZipFileText");
+         const driverZipFileSelect = document.getElementById("driverZipFileSelect");
+         if (driverZipFileText) driverZipFileText.value = driverZip;
+         if (driverZipFileSelect) driverZipFileSelect.value = driverZip;
+         
          document.getElementById("driverModelFile").value = mapping.driverInf || "";
          document.getElementById("driverModelNameText").value = model;
          updateAllPreviews();
       }
+    }
+    
+    // Function to sync driver ZIP file fields
+    function updateDriverZipFile() {
+      const driverZipFileText = document.getElementById("driverZipFileText");
+      const driverZipFileSelect = document.getElementById("driverZipFileSelect");
+      const driverZipFile = document.getElementById("driverZipFile");
+      
+      // Get value from whichever field was changed (manual input takes precedence if both have values)
+      let value = "";
+      if (driverZipFileText && driverZipFileText.value.trim()) {
+        value = driverZipFileText.value.trim();
+        // Sync dropdown if manual input matches an option
+        if (driverZipFileSelect) {
+          driverZipFileSelect.value = value;
+        }
+      } else if (driverZipFileSelect && driverZipFileSelect.value) {
+        value = driverZipFileSelect.value;
+        // Sync manual input
+        if (driverZipFileText) {
+          driverZipFileText.value = value;
+        }
+      }
+      
+      // Update hidden field
+      if (driverZipFile) {
+        driverZipFile.value = value;
+      }
+      
+      updateAllPreviews();
     }
     
     /* ---------------------------
@@ -1340,6 +1405,24 @@ input:checked + .toggle-slider:before {
     function previousSection(currentId, prevId) {
       document.getElementById(currentId).style.display = "none";
       document.getElementById(prevId).style.display = "block";
+    }
+    
+    // Navigate from Section 1 - skip Section 2 if brand/model are selected (not Manual)
+    function navigateFromSection1() {
+      const brand = document.getElementById("brandSelect").value;
+      const model = document.getElementById("modelSelect").value;
+      
+      // Skip Section 2 if brand and model are selected and neither is "Manual" or empty
+      if (brand && brand !== "Manual" && brand.trim() !== "" && 
+          model && model !== "Manual" && model.trim() !== "") {
+        // Auto-populate driver details from model selection if not already done
+        onModelChange();
+        // Skip directly to Section 3
+        nextSection('section1', 'section3');
+      } else {
+        // Go to Section 2 for manual entry
+        nextSection('section1', 'section2');
+      }
     }
     
     /* ---------------------------

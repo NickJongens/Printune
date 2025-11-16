@@ -1012,7 +1012,7 @@ input:checked + .toggle-slider:before {
           <div class="driver-details-container" style="margin-top: 1rem;">
             <div class="driver-details-column">
               <h3>Driver ZIP File (Manual)</h3>
-              <input type="text" id="driverZipFileText" placeholder="Driver/BROTHER_HL.zip" oninput="updateDriverZipFile()">
+              <input type="text" id="driverZipFileText" placeholder="BROTHER_HL.zip" oninput="updateDriverZipFile()">
             </div>
             <div class="driver-details-column">
               <h3>Select Driver ZIP</h3>
@@ -1339,18 +1339,40 @@ input:checked + .toggle-slider:before {
       const mapping = modelsData[brand];
       if(mapping) {
          const driverZip = mapping.driverZip || "";
-         // Update hidden field
+         // Update hidden field with full path
          document.getElementById("driverZipFile").value = driverZip;
          // Update visible fields
          const driverZipFileText = document.getElementById("driverZipFileText");
          const driverZipFileSelect = document.getElementById("driverZipFileSelect");
-         if (driverZipFileText) driverZipFileText.value = driverZip;
+         // Manual field shows just filename (no Driver/ prefix)
+         if (driverZipFileText) driverZipFileText.value = removeDriverPrefix(driverZip);
+         // Dropdown shows full path
          if (driverZipFileSelect) driverZipFileSelect.value = driverZip;
          
          document.getElementById("driverModelFile").value = mapping.driverInf || "";
          document.getElementById("driverModelNameText").value = model;
          updateAllPreviews();
       }
+    }
+    
+    // Helper function to ensure Driver/ prefix is present
+    function ensureDriverPrefix(filename) {
+      if (!filename) return "";
+      const trimmed = filename.trim();
+      if (trimmed.startsWith('Driver/')) {
+        return trimmed;
+      }
+      return `Driver/${trimmed}`;
+    }
+    
+    // Helper function to remove Driver/ prefix for display
+    function removeDriverPrefix(path) {
+      if (!path) return "";
+      const trimmed = path.trim();
+      if (trimmed.startsWith('Driver/')) {
+        return trimmed.substring(7); // Remove "Driver/" (7 characters)
+      }
+      return trimmed;
     }
     
     // Function to sync driver ZIP file fields
@@ -1360,24 +1382,39 @@ input:checked + .toggle-slider:before {
       const driverZipFile = document.getElementById("driverZipFile");
       
       // Get value from whichever field was changed (manual input takes precedence if both have values)
-      let value = "";
+      let hiddenValue = "";
+      let manualDisplayValue = "";
+      
       if (driverZipFileText && driverZipFileText.value.trim()) {
-        value = driverZipFileText.value.trim();
-        // Sync dropdown if manual input matches an option
+        // User typed in manual field - it should be just the filename
+        const manualInput = driverZipFileText.value.trim();
+        manualDisplayValue = removeDriverPrefix(manualInput); // Ensure no prefix in display
+        hiddenValue = ensureDriverPrefix(manualInput); // Add prefix for hidden field
+        
+        // Sync dropdown - try to find matching option with full path
         if (driverZipFileSelect) {
-          driverZipFileSelect.value = value;
+          // Try to find an option that matches the full path
+          const matchingOption = Array.from(driverZipFileSelect.options).find(
+            opt => removeDriverPrefix(opt.value) === manualDisplayValue
+          );
+          if (matchingOption) {
+            driverZipFileSelect.value = matchingOption.value;
+          }
         }
       } else if (driverZipFileSelect && driverZipFileSelect.value) {
-        value = driverZipFileSelect.value;
-        // Sync manual input
+        // User selected from dropdown - it has full path
+        hiddenValue = driverZipFileSelect.value;
+        manualDisplayValue = removeDriverPrefix(hiddenValue); // Strip prefix for display
+        
+        // Sync manual input with just filename
         if (driverZipFileText) {
-          driverZipFileText.value = value;
+          driverZipFileText.value = manualDisplayValue;
         }
       }
       
-      // Update hidden field
+      // Update hidden field with full path
       if (driverZipFile) {
-        driverZipFile.value = value;
+        driverZipFile.value = hiddenValue;
       }
       
       updateAllPreviews();

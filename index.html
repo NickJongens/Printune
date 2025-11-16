@@ -1009,17 +1009,10 @@ input:checked + .toggle-slider:before {
             </div>
           </div>
           <!-- Third Row: Driver ZIP File -->
-          <div class="driver-details-container" style="margin-top: 1rem;">
-            <div class="driver-details-column">
-              <h3>Driver ZIP File (Manual)</h3>
-              <input type="text" id="driverZipFileText" placeholder="BROTHER_HL.zip" oninput="updateDriverZipFile()">
-            </div>
-            <div class="driver-details-column">
-              <h3>Select Driver ZIP</h3>
-              <select id="driverZipFileSelect" onchange="updateDriverZipFile()">
-                <option value="">--Select Driver ZIP--</option>
-              </select>
-            </div>
+          <div style="margin-top: 1rem;">
+            <h3>Driver ZIP File</h3>
+            <input type="text" id="driverZipFileText" placeholder="BROTHER_HL.zip" oninput="updateDriverZipFile()">
+            <p style="font-size: 12px; color: var(--text-secondary); margin: 0.3rem 0 0;">Enter just the filename (e.g., HP_GENERIC.zip)</p>
           </div>
           <div style="margin-top:1rem;">
             <button class="nav" type="button" onclick="previousSection('section2', 'section1')">Previous</button>
@@ -1227,7 +1220,7 @@ input:checked + .toggle-slider:before {
   
   <!-- Footer -->
   <footer>
-    &copy; Nick Jongens - 2025 - Version 1.1.1
+    &copy; Nick Jongens - 2025 - Version 1.1.2
   </footer>
   
   <!-- Include JSZip Library -->
@@ -1263,22 +1256,10 @@ input:checked + .toggle-slider:before {
         .then(data => {
           const datalist = document.getElementById("driverZipOptions");
           datalist.innerHTML = "";
-          const selectEl = document.getElementById("driverZipFileSelect");
-          if (selectEl) {
-            selectEl.innerHTML = '<option value="">--Select Driver ZIP--</option>';
-          }
           data.forEach(driver => {
             const option = document.createElement("option");
             option.value = driver;
             datalist.appendChild(option);
-            
-            // Also populate the dropdown
-            if (selectEl) {
-              const selectOption = document.createElement("option");
-              selectOption.value = driver;
-              selectOption.textContent = driver;
-              selectEl.appendChild(selectOption);
-            }
           });
         })
         .catch(error => {
@@ -1341,13 +1322,9 @@ input:checked + .toggle-slider:before {
          const driverZip = mapping.driverZip || "";
          // Update hidden field with full path
          document.getElementById("driverZipFile").value = driverZip;
-         // Update visible fields
+         // Update manual field - show just filename (no Driver/ prefix)
          const driverZipFileText = document.getElementById("driverZipFileText");
-         const driverZipFileSelect = document.getElementById("driverZipFileSelect");
-         // Manual field shows just filename (no Driver/ prefix)
          if (driverZipFileText) driverZipFileText.value = removeDriverPrefix(driverZip);
-         // Dropdown shows full path
-         if (driverZipFileSelect) driverZipFileSelect.value = driverZip;
          
          document.getElementById("driverModelFile").value = mapping.driverInf || "";
          document.getElementById("driverModelNameText").value = model;
@@ -1378,38 +1355,18 @@ input:checked + .toggle-slider:before {
     // Function to sync driver ZIP file fields
     function updateDriverZipFile() {
       const driverZipFileText = document.getElementById("driverZipFileText");
-      const driverZipFileSelect = document.getElementById("driverZipFileSelect");
       const driverZipFile = document.getElementById("driverZipFile");
       
-      // Get value from whichever field was changed (manual input takes precedence if both have values)
       let hiddenValue = "";
-      let manualDisplayValue = "";
       
       if (driverZipFileText && driverZipFileText.value.trim()) {
         // User typed in manual field - it should be just the filename
         const manualInput = driverZipFileText.value.trim();
-        manualDisplayValue = removeDriverPrefix(manualInput); // Ensure no prefix in display
-        hiddenValue = ensureDriverPrefix(manualInput); // Add prefix for hidden field
-        
-        // Sync dropdown - try to find matching option with full path
-        if (driverZipFileSelect) {
-          // Try to find an option that matches the full path
-          const matchingOption = Array.from(driverZipFileSelect.options).find(
-            opt => removeDriverPrefix(opt.value) === manualDisplayValue
-          );
-          if (matchingOption) {
-            driverZipFileSelect.value = matchingOption.value;
-          }
-        }
-      } else if (driverZipFileSelect && driverZipFileSelect.value) {
-        // User selected from dropdown - it has full path
-        hiddenValue = driverZipFileSelect.value;
-        manualDisplayValue = removeDriverPrefix(hiddenValue); // Strip prefix for display
-        
-        // Sync manual input with just filename
-        if (driverZipFileText) {
-          driverZipFileText.value = manualDisplayValue;
-        }
+        // Ensure no prefix in display field
+        const manualDisplayValue = removeDriverPrefix(manualInput);
+        driverZipFileText.value = manualDisplayValue;
+        // Add prefix for hidden field
+        hiddenValue = ensureDriverPrefix(manualInput);
       }
       
       // Update hidden field with full path

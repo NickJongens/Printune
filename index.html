@@ -1227,7 +1227,7 @@ input:checked + .toggle-slider:before {
   
   <!-- Footer -->
   <footer>
-    &copy; Nick Jongens - 2025 - Version 1.1
+    &copy; Nick Jongens - 2025 - Version 1.1.1
   </footer>
   
   <!-- Include JSZip Library -->
@@ -1710,6 +1710,11 @@ input:checked + .toggle-slider:before {
         console.log(`Attempting to fetch driver ZIP from: ${fetchUrl}`);
         const driverPromise = fetch(fetchUrl)
           .then(response => {
+            // If file not found (404), skip it silently (likely a manual entry)
+            if (response.status === 404) {
+              console.warn(`Driver ZIP not found at ${fetchUrl} - skipping (manual entry expected)`);
+              return null;
+            }
             if (!response.ok) {
               throw new Error(`Failed to fetch driver ZIP from ${fetchUrl}: ${response.status} ${response.statusText}`);
             }
@@ -1717,9 +1722,18 @@ input:checked + .toggle-slider:before {
             return response.arrayBuffer();
           })
           .then(data => {
-            // Extract just the filename without the Driver/ prefix for the ZIP file
-            const zipFileName = driverZipFileName.split('/').pop();
-            return zip.file(zipFileName, data);
+            // Only add to ZIP if data was successfully fetched
+            if (data) {
+              // Extract just the filename without the Driver/ prefix for the ZIP file
+              const zipFileName = driverZipFileName.split('/').pop();
+              return zip.file(zipFileName, data);
+            }
+            return null;
+          })
+          .catch(error => {
+            // Log error but don't fail the entire package generation
+            console.warn(`Error fetching driver ZIP: ${error.message} - continuing without driver ZIP`);
+            return null;
           });
         promises.push(driverPromise);
       } else {

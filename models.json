@@ -86,11 +86,20 @@
       "Canon Generic Plus PCL6"
     ]
   },
+  
   "Ricoh MP Series": {
     "driverZip": "Driver/RICOH_MP.zip",
     "driverInf": "MPC4504_.inf",
     "models": [
       "RICOH MP C4504 PCL 6"
+    ]
+  },
+  "Ricoh P Series": {
+    "driverZip": "Driver/RICOH_P.zip",
+    "driverInf": "SP_501__.inf",
+    "models": [
+      "RICOH P 501 PCL 6",
+      "RICOH P 502 PCL 6"
     ]
   },
   "Ricoh SP Series": {
@@ -100,5 +109,8 @@
       "RICOH SP 3710DN PCL 6"
     ]
   },
+  
+  
   "Manual": {}
 }
+RICOH P 502 PCL 6

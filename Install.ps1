@@ -183,7 +183,7 @@ try {
     }
 
     $ExtractionRoot = Join-Path ([System.IO.Path]::GetTempPath()) (
-        'ADITS-PrinterDriver-{0}' -f [guid]::NewGuid().ToString('N')
+        'Printune-PrinterDriver-{0}' -f [guid]::NewGuid().ToString('N')
     )
     New-Item -ItemType Directory -Path $ExtractionRoot -Force | Out-Null
     Write-Log "Extracting '$ZipPath' to temporary working directory."
@@ -300,9 +300,12 @@ try {
             throw "Printer configuration file is empty: '$ResolvedConfigPath'."
         }
 
-        # Restore global DEVMODE and printer-specific driver data only. The r
-        # and p flags retain the deployed queue and port names when the config
-        # was exported from a differently named test queue.
+        # Restore the global DEVMODE and driver-specific data explicitly.
+        # PrintUIEntry documents an all-sections default for /Ss, but not for
+        # /Sr. The r and p flags retain the deployed queue and port names when
+        # the configuration was exported from a differently named test queue.
+        # Do not restore the per-user DEVMODE (u) here: Intune executes this
+        # installer as SYSTEM, so that would configure only SYSTEM's profile.
         $PrintUiArguments = 'printui.dll,PrintUIEntry /Sr /n "{0}" /a "{1}" g d r p /q' -f `
             $PrinterName, $ResolvedConfigPath
         $PrintUiProcess = Start-Process `
@@ -315,7 +318,7 @@ try {
         if ($PrintUiProcess.ExitCode -ne 0) {
             throw "Printer configuration import failed with exit code $($PrintUiProcess.ExitCode)."
         }
-        Write-Log "Applied global printer defaults and driver data from '$ResolvedConfigPath'."
+        Write-Log "PrintUIEntry processed printer configuration '$ResolvedConfigPath' without reporting an error."
     }
 
     Write-Log 'STATUS=SUCCESS'
